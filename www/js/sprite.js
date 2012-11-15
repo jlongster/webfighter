@@ -1,6 +1,6 @@
 define(function(require) {
     var resources = require('./resources');
-    var Obj = require('./Object');
+    var Obj = require('./object');
 
     return Obj.extend({
         init: function(url, pos, size, speed, frames) {
@@ -38,7 +38,7 @@ define(function(require) {
                 return Math.floor(resources.get(this.url).width / this.size[0]);
             }
         },
-        
+
         render: function(ctx, target, clip) {
             var frame;
             var max = this.getNumFrames();
@@ -52,7 +52,7 @@ define(function(require) {
             }
 
             ctx.save();
-            
+
             if(this.flipHoriz) {
                 ctx.translate(target[0] + this.size[0] * this.scale[0], target[1]);
                 ctx.scale(-this.scale[0], this.scale[1]);
