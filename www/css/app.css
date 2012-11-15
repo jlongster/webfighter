@@ -1,9 +1,14 @@
 
-/* Tip: Use "@import" to add styles instead of adding <link>'s in your
-   HTML, and volo will inline it when building for production */
+/* @import "install-button.css"; */
 
-/* Styles for the installation button */
-@import "install-button.css";
+html, body {
+    margin: 0;
+    padding: 0;
+    font-size: 0;
+}
 
-/* Your styles here */
-
+/* The global font size must be 0 so whitespace in the markup doesn't
+   add scrollbars, so reset it inside the common block elements */
+div, section, header {
+    font-size: 13px;
+}
