@@ -44,6 +44,12 @@ define(function(require) {
                 this.pos[0] += 250 * dt;
             }
 
+            // Touch movement.
+            this.pos[0] += input.dpadOffset[0] * 30 * dt;
+            this.pos[1] += input.dpadOffset[1] * 30 * dt;
+
+            // TODO: Bounds check position.
+
             this.parent(dt);
         }
     });
@@ -61,7 +67,7 @@ define(function(require) {
                        vec2.create([0, 0]),
                        vec2.create([50, 50]))
         ));
-        
+
         resources.onReady(heartbeat);
     }
 
@@ -92,7 +98,7 @@ define(function(require) {
 
         var now = Date.now();
         var dt = (now - last) / 1000.0;
-        
+
         update(dt);
         render();
         requestAnimFrame(heartbeat);
