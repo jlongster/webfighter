@@ -3,16 +3,15 @@ define(function(require) {
     var Obj = require('./object');
 
     return Obj.extend({
-        init: function(url, pos, size, speed, frames) {
+        init: function(url, pos, size, speed, frames, dir) {
             this.pos = pos;
             this.size = size;
-            this.speed = speed || 6;
+            this.speed = typeof speed === 'number' ? speed : 6;
             this.frames = frames;
             this._index = 0;
             this.url = url;
             this.scale = vec2.create([1, 1]);
-
-            resources.load(url);
+            this.dir = dir || 'horizontal';
         },
 
         update: function(dt) {
@@ -39,7 +38,7 @@ define(function(require) {
             }
         },
 
-        render: function(ctx, target, clip) {
+        render: function(ctx, clip) {
             var frame;
             var max = this.getNumFrames();
             clip = clip || this.size;
@@ -51,26 +50,23 @@ define(function(require) {
                 frame = Math.floor(this._index % max);
             }
 
-            ctx.save();
+            var x = this.pos[0];
+            var y = this.pos[1];
 
-            if(this.flipHoriz) {
-                ctx.translate(target[0] + this.size[0] * this.scale[0], target[1]);
-                ctx.scale(-this.scale[0], this.scale[1]);
+            if(this.dir == 'vertical') {
+                y += frame * this.size[1];
             }
             else {
-                ctx.translate(target[0], target[1]);
-                ctx.scale(this.scale[0], this.scale[1]);
+                x += frame * this.size[0];
             }
 
             ctx.drawImage(resources.get(this.url),
-                          this.pos[0] + frame * this.size[0],
-                          this.pos[1],
+                          x, y,
                           Math.min(this.size[0], clip[0]),
                           Math.min(this.size[1], clip[1]),
                           0, 0,
                           Math.min(this.size[0], clip[0]),
                           Math.min(this.size[1], clip[1]));
-            ctx.restore();
         }
     });
 });

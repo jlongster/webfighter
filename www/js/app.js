@@ -1,93 +1,28 @@
-var requestAnimFrame = (function(){
-    return window.requestAnimationFrame       ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame    ||
-        window.oRequestAnimationFrame      ||
-        window.msRequestAnimationFrame     ||
-        function(callback){
-            window.setTimeout(callback, 1000 / 60);
-        };
-})();
-
 define(function(require) {
     require('receiptverifier');
     require('./install-button');
     require('./math');
 
     var resources = require('./resources');
-    var Sprite = require('./sprite');
-    var Entity = require('./entity');
-    var Input = require('./input');
+    var input = require('./input');
+    var level = require('./level');
 
-    var width = window.innerWidth;
-    var height = window.innerHeight;
-    var canvas, ctx;
+    var Renderer = require('./renderer');
+    var Scene = require('./scene');
+    var Camera = require('./camera');
 
-    var objects = [];
-    var input = new Input();
-
-    var Player = Entity.extend({
-        update: function(dt) {
-            if(input.isDown('w')) {
-                this.pos[1] -= 250 * dt;
-            }
-
-            if(input.isDown('a')) {
-                this.pos[0] -= 250 * dt;
-            }
-
-            if(input.isDown('s')) {
-                this.pos[1] += 250 * dt;
-            }
-
-            if(input.isDown('d')) {
-                this.pos[0] += 250 * dt;
-            }
-
-            // Touch movement.
-            this.pos[0] += input.dpadOffset[0] * 30 * dt;
-            this.pos[1] += input.dpadOffset[1] * 30 * dt;
-
-            // TODO: Bounds check position.
-
-            this.parent(dt);
-        }
-    });
+    var renderer;
+    var scene;
 
     function init() {
-        canvas = document.getElementById('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        ctx = canvas.getContext('2d');
+        var camera = new Camera();
+        renderer = new Renderer(window.innerWidth / 2.0,
+                                window.innerHeight / 2.0);
+        scene = new Scene(camera);
 
-        objects.push(new Player(
-            [0, 0],
-            [50, 50],
-            new Sprite('../img/bosses.png',
-                       vec2.create([0, 0]),
-                       vec2.create([50, 50]))
-        ));
+        level.init(scene, renderer);
 
-        resources.onReady(heartbeat);
-    }
-
-    function update(dt) {
-        for(var i=0, l=objects.length; i<l; i++) {
-            if(objects[i].update) {
-                objects[i].update(dt);
-            }
-        }
-    }
-
-    function render() {
-        ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, width, height);
-
-        for(var i=0, l=objects.length; i<l; i++) {
-            if(objects[i].render) {
-                objects[i].render(ctx);
-            }
-        }
+        heartbeat();
     }
 
     var last;
@@ -99,12 +34,18 @@ define(function(require) {
         var now = Date.now();
         var dt = (now - last) / 1000.0;
 
-        update(dt);
-        render();
-        requestAnimFrame(heartbeat);
+        input.init();
+        scene.update(dt);
+        renderer.render(scene);
 
         last = now;
+        requestAnimFrame(heartbeat);
     }
 
-    init();
+    resources.load([
+        'img/bosses.png',
+        'img/dungeon.png',
+        'img/floor.png'
+    ]);
+    resources.onReady(init);
 });

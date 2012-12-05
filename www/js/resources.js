@@ -4,7 +4,18 @@ define(function(require) {
     var loading = [];
     var readyCallbacks = [];
 
-    function load(url) {
+    function load(urlOrArr) {
+        if(urlOrArr instanceof Array) {
+            urlOrArr.forEach(function(url) {
+                _load(url);
+            });
+        }
+        else {
+            _load(urlOrArr);
+        }
+    }
+
+    function _load(url) {
         if(resourceCache[url]) {
             return resourceCache[url];
         }

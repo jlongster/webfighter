@@ -2,9 +2,9 @@ define(function(require) {
     var Obj = require('./object');
 
     return Obj.extend({
-        init: function(pos, size, sprite) {
+        init: function(pos, scale, sprite) {
             this.pos = vec2.create(pos || [0, 0]);
-            this.size = vec2.create(size || [50, 50]);
+            this.size = vec2.create(scale || [1, 1]);
             this.sprite = sprite;
         },
 
@@ -16,7 +16,13 @@ define(function(require) {
 
         render: function(ctx) {
             if(this.sprite) {
-                this.sprite.render(ctx, this.pos);
+                this.sprite.render(ctx);
+            }
+        },
+
+        remove: function() {
+            if(this._scene) {
+                this._scene.removeObject(this);
             }
         }
     });

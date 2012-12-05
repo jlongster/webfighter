@@ -24,7 +24,7 @@ define(function(require) {
     };
 
     vec2.createFrom = function (x, y) {
-        var dest = new MatrixArray(2);
+        var dest = new ArrayType(2);
 
         dest[0] = x;
         dest[1] = y;
