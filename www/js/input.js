@@ -8,6 +8,7 @@ define(function(require) {
 
     var pressedKeys = {};
     var specialKeys = {
+        32: 'SPACE',
         37: 'LEFT',
         38: 'UP',
         39: 'RIGHT',

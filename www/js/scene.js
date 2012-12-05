@@ -56,9 +56,11 @@ define(function(require) {
         },
 
         checkCollisions: function() {
-            var player = this.getObject('player');
-            if(player) {
-                this.checkObjCollisions(player);
+            var objs = this.objects;
+            for(var i=0, l=objs.length; i<l; i++) {
+                if(objs[i] && objs[i].collide) {
+                    this.checkObjCollisions(objs[i]);
+                }
             }
         },
 

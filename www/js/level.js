@@ -12,8 +12,8 @@ define(function(require) {
         ));
 
         var enemy = new Enemy(
-            [400, 100],
-            [50, 50],
+            [200, 0],
+            [35, 50],
             new Sprite('img/bosses.png',
                        [323, 516],
                        [40, 50],
@@ -22,20 +22,61 @@ define(function(require) {
         );
         scene.addObject(enemy);
 
+        enemy = new Enemy(
+            [200, 100],
+            [35, 50],
+            new Sprite('img/bosses.png',
+                       [323, 516],
+                       [40, 50],
+                       2,
+                       [0, 1])
+        );
+        scene.addObject(enemy);
+
+        enemy = new Enemy(
+            [200, 200],
+            [35, 50],
+            new Sprite('img/bosses.png',
+                       [323, 516],
+                       [40, 50],
+                       2,
+                       [0, 1])
+        );
+        scene.addObject(enemy);
+
+        for(var i=0; i<800; i++) {
+            enemy = new Enemy(
+                [300 + i*30, Math.sin(i/20) * renderer.height],
+                [35, 50],
+                new Sprite('img/bosses.png',
+                           [3, 154],
+                           [40, 35],
+                           6,
+                           [0, 1, 2, 3])
+            );
+            scene.addObject(enemy);
+        }
+
         var player = new Player(
             [50, 50],
-            [50, 50],
+            [18, 18],
             new Sprite('img/bosses.png',
                        [211, 483],
                        [27, 19],
                        3,
                        [0, 1])
         );
+        player.collide = true;
         player.id = 'player';
         scene.addObject(player);
     }
 
     var Player = SceneObject.extend({
+        init: function(pos, size, sprite) {
+            this.parent(pos, size, sprite);
+            this.lastShot = 0;
+        },
+
         update: function(dt) {
             if(input.isDown('w')) {
                 this.pos[1] -= 250 * dt;
@@ -53,6 +94,10 @@ define(function(require) {
                 this.pos[0] += 250 * dt;
             }
 
+            if(input.isDown('space')) {
+                this.shoot();
+            }
+
             // Touch movement.
             this.pos[0] += input.dpadOffset[0] * 30 * dt;
             this.pos[1] += input.dpadOffset[1] * 30 * dt;
@@ -60,6 +105,39 @@ define(function(require) {
             // TODO: Bounds check position.
 
             this.parent(dt);
+        },
+
+        shoot: function() {
+            if(Date.now() - this.lastShot > 100) {
+                this._scene.addObject(new Laser(
+                    [this.pos[0] + this.size[0],
+                     this.pos[1] + this.size[1] / 2]
+                ));
+
+                this.lastShot = Date.now();
+            }
+        }
+    });
+
+    var Laser = SceneObject.extend({
+        init: function(pos) {
+            this.parent(pos, [10, 5]);
+            this.collide = true;
+        },
+
+        update: function(dt) {
+            this.pos[0] += 1000 * dt;
+        },
+
+        render: function(ctx) {
+            ctx.fillRect(0, 0, 10, 5);
+        },
+
+        onCollide: function(obj) {
+            if(obj instanceof Enemy) {
+                obj.remove();
+                this.remove();
+            }
         }
     });
 
@@ -70,7 +148,9 @@ define(function(require) {
         },
 
         onCollide: function(obj) {
-            obj.remove();
+            if(obj instanceof Player) {
+                obj.remove();
+            }
         }
     });
 

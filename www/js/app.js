@@ -38,6 +38,8 @@ define(function(require) {
         scene.update(dt);
         renderer.render(scene);
 
+        //renderer.debug(scene);
+
         last = now;
         requestAnimFrame(heartbeat);
     }
