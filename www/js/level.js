@@ -4,8 +4,12 @@ define(function(require) {
 
     var input = require('./input');
     var resources = require('./resources');
+    var _scene;
+    var _renderer;
 
     function init(scene, renderer) {
+        _scene = scene;
+        _renderer = renderer;
         scene.addObject(new Floor(
             renderer,
             new Sprite('img/dungeon.png', [333, 897], [16, 16], 0)
@@ -102,7 +106,12 @@ define(function(require) {
             this.pos[0] += input.dpadOffset[0] * 30 * dt;
             this.pos[1] += input.dpadOffset[1] * 30 * dt;
 
-            // TODO: Bounds check position.
+            // Bounds-check position.
+            var camX = _scene.camera.pos[0];
+            var maxX = _renderer.width + camX - this.size[0];
+            var maxY = _renderer.height - this.size[1];
+            this.pos[0] = bound(this.pos[0], camX, maxX);
+            this.pos[1] = bound(this.pos[1], 0, maxY);
 
             this.parent(dt);
         },

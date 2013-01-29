@@ -2,6 +2,8 @@
 define(function(require) {
     require('./math');
 
+    var _this = this;
+
     function p(e) {
         e.preventDefault();
     }
@@ -43,10 +45,6 @@ define(function(require) {
         return pressedKeys[key.toUpperCase()];
     }
 
-    function rbound(i, min, max) {
-        return Math.round(Math.max(Math.min(i, max), min));
-    }
-
     function init() {
         // Initialize the DPad touch control.
         var dpad = document.getElementsByClassName('dpad')[0];
@@ -58,12 +56,12 @@ define(function(require) {
                 y += cur.offsetTop;
                 cur = cur.offsetParent;
             }
-            return vec2.create([x, y]);
+            return vec2.createFrom(x, y);
         })(dpad);
         var dpadBounds = (function(cur) {
-            var x = cur.clientWidth / 2;
-            var y = cur.clientHeight / 2;
-            return vec2.create([x, y]);
+            var x = cur.clientWidth / 2 + 5;
+            var y = cur.clientHeight / 2 + 5;
+            return vec2.createFrom(x, y);
         })(dpad);
 
         dpad.addEventListener('touchstart', function(e) {
@@ -76,6 +74,8 @@ define(function(require) {
             var touch = e.changedTouches[0];
             var v = vec2.createFrom(touch.clientX, touch.clientY);
             vec2.subtract(v, dpadZero, dpadOffset);
+            dpadOffset[0] = bound(dpadOffset[0], -dpadBounds[0], dpadBounds[0]);
+            dpadOffset[1] = bound(dpadOffset[1], -dpadBounds[1], dpadBounds[1]);
         }, true);
 
         dpad.addEventListener('touchend', function dpadEnd(e) {
@@ -108,7 +108,6 @@ define(function(require) {
         setKey: setKey,
         isDown: isDown,
         dpadOffset: dpadOffset,
-        fireState: fireState,
-        rbound: rbound
+        fireState: fireState
     };
 });
