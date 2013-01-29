@@ -136,6 +136,11 @@ define(function(require) {
 
         update: function(dt) {
             this.pos[0] += 1000 * dt;
+            var camX = _scene.camera.pos[0];
+            var maxX = _renderer.width + camX - this.size[0];
+            if (this.pos[0] >= maxX) {
+                this.remove();
+            }
         },
 
         render: function(ctx) {
