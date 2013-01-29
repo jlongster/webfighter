@@ -2,8 +2,6 @@
 define(function(require) {
     require('./math');
 
-    var _this = this;
-
     function p(e) {
         e.preventDefault();
     }
