@@ -94,7 +94,7 @@ define(function(require) {
                 this.pos[0] += 250 * dt;
             }
 
-            if(input.isDown('space')) {
+            if(input.isDown('space') || input.fireState) {
                 this.shoot();
             }
 
@@ -171,7 +171,7 @@ define(function(require) {
 
         update: function(dt) {
             this.sprite.update(dt);
-            
+
             // Get the screen position, and if it's scrolled more than
             // the size of the sprite, snap it back to [0, 0]
             var pos = this._scene.getScreenPos(this.pos);
@@ -187,7 +187,7 @@ define(function(require) {
                                                 'repeat');
             }
 
-            
+
             ctx.fillStyle = this.pattern;
             ctx.fillRect(0, 0, this.size[0], this.size[1]);
         }

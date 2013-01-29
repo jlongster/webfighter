@@ -16,14 +16,21 @@ canvas {
     image-rendering: -webkit-optimize-contrast;
 }
 
-.dpad {
+.input {
     background-color: #fcc;
     border-radius: 50%;
     position: absolute;
     bottom: 10px;
-    left: 10px;
     width: 60px;
     height: 60px;
+}
+
+.dpad {
+    left: 10px;
+}
+
+.fire {
+    right: 10px;
 }
 
 /* The global font size must be 0 so whitespace in the markup doesn't

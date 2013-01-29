@@ -15,6 +15,7 @@ define(function(require) {
         40: 'DOWN'
     };
     var dpadOffset = vec2.createFrom(0, 0);
+    var fireState = false;
 
     window.addEventListener('touchstart', p, true);
     window.addEventListener('touchmove', p, true);
@@ -42,7 +43,12 @@ define(function(require) {
         return pressedKeys[key.toUpperCase()];
     }
 
+    function rbound(i, min, max) {
+        return Math.round(Math.max(Math.min(i, max), min));
+    }
+
     function init() {
+        // Initialize the DPad touch control.
         var dpad = document.getElementsByClassName('dpad')[0];
         var dpadZero = (function(cur) {
             var x = cur.clientWidth / 2;
@@ -52,6 +58,11 @@ define(function(require) {
                 y += cur.offsetTop;
                 cur = cur.offsetParent;
             }
+            return vec2.create([x, y]);
+        })(dpad);
+        var dpadBounds = (function(cur) {
+            var x = cur.clientWidth / 2;
+            var y = cur.clientHeight / 2;
             return vec2.create([x, y]);
         })(dpad);
 
@@ -72,12 +83,32 @@ define(function(require) {
             dpad.style.backgroundColor = '#fcc';
             dpadOffset[0] = dpadOffset[1] = 0;
         }, true);
+
+        // Initialize the Fire button.
+        var fire = document.getElementsByClassName('fire')[0];
+
+        function fireStart(e) {
+            p(e);
+            fireState = true;
+        }
+
+        function fireCancel(e) {
+            p(e);
+            fireState = false;
+        }
+
+        fire.addEventListener('touchstart', fireStart, false);
+        fire.addEventListener('touchend', fireCancel, false);
+        fire.addEventListener('touchleave', fireCancel, false);
+        fire.addEventListener('touchcancel', fireCancel, false);
     }
 
     return {
         init: init,
         setKey: setKey,
         isDown: isDown,
-        dpadOffset: dpadOffset
+        dpadOffset: dpadOffset,
+        fireState: fireState,
+        rbound: rbound
     };
 });
