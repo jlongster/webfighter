@@ -21,6 +21,7 @@ define(function(require) {
         scene = new Scene(camera);
 
         level.init(scene, renderer);
+        input.init();
 
         heartbeat();
     }
@@ -34,7 +35,6 @@ define(function(require) {
         var now = Date.now();
         var dt = (now - last) / 1000.0;
 
-        input.init();
         scene.update(dt);
         renderer.render(scene);
 
