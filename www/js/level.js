@@ -82,6 +82,10 @@ define(function(require) {
         },
 
         update: function(dt) {
+            // Move with the screen.
+            // TODO: Move this magic number to a global somewhere?
+            this.pos[0] += 20 * dt;
+
             if(input.isDown('w')) {
                 this.pos[1] -= 250 * dt;
             }
