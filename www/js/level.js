@@ -98,7 +98,7 @@ define(function(require) {
                 this.pos[0] += 250 * dt;
             }
 
-            if(input.isDown('space') || input.isFiring()) {
+            if(input.isFiring()) {
                 this.shoot();
             }
 

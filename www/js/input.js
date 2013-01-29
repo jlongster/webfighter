@@ -15,7 +15,9 @@ define(function(require) {
         40: 'DOWN'
     };
     var dpadOffset = vec2.createFrom(0, 0);
-    var fireState = false;
+    var pressedButtons = {
+        'FIRE': false
+    };
 
     window.addEventListener('touchstart', p, true);
     window.addEventListener('touchmove', p, true);
@@ -44,8 +46,7 @@ define(function(require) {
     }
 
     function isFiring() {
-        alert('isFiring');
-        return fireState;
+        return isDown('SPACE');
     }
 
     function init() {
@@ -92,13 +93,13 @@ define(function(require) {
 
         function fireStart(e) {
             p(e);
-            fireState = true;
+            setKey({keyCode: 32}, true);
             fire.style.backgroundColor = '#ccf';
         }
 
         function fireCancel(e) {
             p(e);
-            fireState = false;
+            setKey({keyCode: 32}, false);
             fire.style.backgroundColor = '#fcc';
         }
 
