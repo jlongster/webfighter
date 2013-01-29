@@ -43,6 +43,11 @@ define(function(require) {
         return pressedKeys[key.toUpperCase()];
     }
 
+    function isFiring() {
+        alert('isFiring');
+        return fireState;
+    }
+
     function init() {
         // Initialize the DPad touch control.
         var dpad = document.getElementsByClassName('dpad')[0];
@@ -108,6 +113,6 @@ define(function(require) {
         setKey: setKey,
         isDown: isDown,
         dpadOffset: dpadOffset,
-        fireState: fireState
+        isFiring: isFiring
     };
 });
