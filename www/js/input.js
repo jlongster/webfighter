@@ -88,11 +88,13 @@ define(function(require) {
         function fireStart(e) {
             p(e);
             fireState = true;
+            fire.style.backgroundColor = '#ccf';
         }
 
         function fireCancel(e) {
             p(e);
             fireState = false;
+            fire.style.backgroundColor = '#fcc';
         }
 
         fire.addEventListener('touchstart', fireStart, false);
