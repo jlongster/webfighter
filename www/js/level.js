@@ -15,49 +15,20 @@ define(function(require) {
             new Sprite('img/dungeon.png', [333, 897], [16, 16], 0)
         ));
 
-        var enemy = new Enemy(
-            [200, 0],
-            [35, 50],
-            new Sprite('img/bosses.png',
-                       [323, 516],
-                       [40, 50],
-                       2,
-                       [0, 1])
-        );
+        var enemy = new Boss([200, 0]);
         scene.addObject(enemy);
 
-        enemy = new Enemy(
-            [200, 100],
-            [35, 50],
-            new Sprite('img/bosses.png',
-                       [323, 516],
-                       [40, 50],
-                       2,
-                       [0, 1])
-        );
+        enemy = new Boss([200, 100]);
         scene.addObject(enemy);
 
-        enemy = new Enemy(
-            [200, 200],
-            [35, 50],
-            new Sprite('img/bosses.png',
-                       [323, 516],
-                       [40, 50],
-                       2,
-                       [0, 1])
-        );
+        enemy = new Boss([200, 200]);
         scene.addObject(enemy);
 
+        var zero = renderer.height / 2;
+        var amplitude = zero - 25;
         for(var i=0; i<800; i++) {
-            enemy = new Enemy(
-                [300 + i*30, Math.sin(i/20) * renderer.height],
-                [35, 50],
-                new Sprite('img/bosses.png',
-                           [3, 154],
-                           [40, 35],
-                           6,
-                           [0, 1, 2, 3])
-            );
+            enemy = new Mook(
+                [300 + i*30, zero - Math.sin(i/10) * amplitude]);
             scene.addObject(enemy);
         }
 
@@ -159,6 +130,7 @@ define(function(require) {
         }
     });
 
+    // TODO: Move these definitions outside of level.js.
     var Enemy = SceneObject.extend({
         update: function(dt) {
             this.parent(dt);
@@ -169,6 +141,42 @@ define(function(require) {
             if(obj instanceof Player) {
                 obj.remove();
             }
+        }
+    });
+
+    var Boss = Enemy.extend({
+        init: function(pos) {
+            this.parent(
+                pos,
+                [35, 50],
+                new Sprite('img/bosses.png',
+                           [323, 516],
+                           [40, 50],
+                           2,
+                           [0, 1])
+            );
+            this._startY = pos[1];
+            this._age = 0;
+        },
+        update: function(dt) {
+            this.parent(dt);
+            this._age += dt;
+            var dY = Math.sin(this._age * 2) * 30;
+            this.pos[1] = this._startY + dY;
+        }
+    });
+
+    var Mook = Enemy.extend({
+        init: function(pos) {
+            this.parent(
+                pos,
+                [35, 50],
+                new Sprite('img/bosses.png',
+                           [3, 154],
+                           [40, 35],
+                           6,
+                           [0, 1, 2, 3])
+            );
         }
     });
 
