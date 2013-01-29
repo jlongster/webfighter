@@ -4,11 +4,10 @@ define(function(require) {
 
     var input = require('./input');
     var resources = require('./resources');
-    var _scene;
+    // TODO: Remove this global?
     var _renderer;
 
     function init(scene, renderer) {
-        _scene = scene;
         _renderer = renderer;
         scene.addObject(new Floor(
             renderer,
@@ -50,6 +49,9 @@ define(function(require) {
         init: function(pos, size, sprite) {
             this.parent(pos, size, sprite);
             this.lastShot = 0;
+            this.score = 0;
+            // TODO: There has to be a better way to do this.
+            this._scoreEl = document.getElementsByClassName('score')[0];
         },
 
         update: function(dt) {
@@ -82,12 +84,13 @@ define(function(require) {
             this.pos[1] += input.dpadOffset[1] * 30 * dt;
 
             // Bounds-check position.
-            var camX = _scene.camera.pos[0];
+            var camX = this._scene.camera.pos[0];
             var maxX = _renderer.width + camX - this.size[0];
             var maxY = _renderer.height - this.size[1];
             this.pos[0] = bound(this.pos[0], camX, maxX);
             this.pos[1] = bound(this.pos[1], 0, maxY);
 
+            this._scoreEl.textContent = this.score;
             this.parent(dt);
         },
 
@@ -100,6 +103,13 @@ define(function(require) {
 
                 this.lastShot = Date.now();
             }
+        },
+
+        incrementScore: function(pts) {
+            this.score += pts;
+            if (this.score < 0) {
+                this.score = 0;
+            }
         }
     });
 
@@ -111,7 +121,7 @@ define(function(require) {
 
         update: function(dt) {
             this.pos[0] += 1000 * dt;
-            var camX = _scene.camera.pos[0];
+            var camX = this._scene.camera.pos[0];
             var maxX = _renderer.width + camX - this.size[0];
             if (this.pos[0] >= maxX) {
                 this.remove();
@@ -124,6 +134,8 @@ define(function(require) {
 
         onCollide: function(obj) {
             if(obj instanceof Enemy) {
+                var player = this._scene.getObject('player');
+                player.incrementScore(obj.points);
                 obj.remove();
                 this.remove();
             }
@@ -141,7 +153,9 @@ define(function(require) {
             if(obj instanceof Player) {
                 obj.remove();
             }
-        }
+        },
+
+        points: 0
     });
 
     var Boss = Enemy.extend({
@@ -158,12 +172,15 @@ define(function(require) {
             this._startY = pos[1];
             this._age = 0;
         },
+
         update: function(dt) {
             this.parent(dt);
             this._age += dt;
             var dY = Math.sin(this._age * 2) * 30;
             this.pos[1] = this._startY + dY;
-        }
+        },
+
+        points: 300
     });
 
     var Mook = Enemy.extend({
@@ -177,7 +194,9 @@ define(function(require) {
                            6,
                            [0, 1, 2, 3])
             );
-        }
+        },
+
+        points: 100
     });
 
     var Floor = SceneObject.extend({
