@@ -75,6 +75,11 @@ define(function(require) {
             }
         },
 
+        hit: function(obj) {
+            // TODO: Decrement life, shield, etc.
+            this.remove();
+        },
+
         incrementScore: function(pts) {
             this.score += pts;
             if (this.score < 0) {
@@ -129,7 +134,7 @@ define(function(require) {
 
         onCollide: function(obj) {
             if(obj instanceof Player) {
-                obj.remove();
+                obj.hit(this);
                 this.remove();
             }
         },
@@ -153,7 +158,7 @@ define(function(require) {
 
         onCollide: function(obj) {
             if(obj instanceof Player) {
-                obj.remove();
+                obj.hit(this);
                 this.remove();
             }
         },
