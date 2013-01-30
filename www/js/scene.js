@@ -48,7 +48,7 @@ define(function(require) {
             this.camera.update(dt);
 
             var objs = this.objects;
-            for(var i=0, l=objs.length; i<l; i++) {
+            for(var i=objs.length - 1; i >= 0; i--) {
                 objs[i].update(dt);
             }
 

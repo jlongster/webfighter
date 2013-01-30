@@ -1,7 +1,7 @@
 define(function(require) {
     // This is inspired by the gl-maxtrix library[1], which doesn't
     // have 2d vectors
-    // 
+    //
     // [1] https://github.com/toji/gl-matrix
 
     var ArrayType = (typeof Float32Array !== 'undefined') ? Float32Array : Array;
@@ -103,6 +103,11 @@ define(function(require) {
         return '[' + vec[0] + ', ' + vec[1] + ']';
     };
 
+    function bound(i, min, max) {
+        return Math.max(Math.min(i, max), min);
+    }
+
     // Make it global because it is used so much
     window.vec2 = vec2;
+    window.bound = bound;
 });
