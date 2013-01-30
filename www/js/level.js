@@ -15,10 +15,17 @@ define(function(require) {
 
         var zero = renderer.height / 2;
         var amplitude = zero - 25;
-        for(var i=0; i<800; i++) {
+        for(var i=0; i<400; i++) {
             enemy = new units.Mook(
                 renderer,
                 [300 + i*30, zero - Math.sin(i/10) * amplitude]);
+            scene.addObject(enemy);
+        }
+
+        for(var i=0; i<30; i++) {
+            enemy = new units.MovingMook(
+                renderer,
+                [600 + i*60, zero + Math.cos(i/5) * amplitude / 2]);
             scene.addObject(enemy);
         }
 

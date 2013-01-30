@@ -223,6 +223,13 @@ define(function(require) {
         points: 100
     });
 
+    var MovingMook = Mook.extend({
+        update: function(dt) {
+            this.pos[0] -= 30 * dt;
+            this.parent(dt);
+        }
+    });
+
     var Floor = SceneObject.extend({
         init: function(renderer) {
             // Add an additional sprite so that we can scroll it
@@ -268,9 +275,11 @@ define(function(require) {
     return {
         Player: Player,
         Laser: Laser,
+        EnemyLaser: EnemyLaser,
         Enemy: Enemy,
         Boss: Boss,
         Mook: Mook,
+        MovingMook: MovingMook,
         Floor: Floor
     };
 });
