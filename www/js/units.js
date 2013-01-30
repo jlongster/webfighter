@@ -108,7 +108,9 @@ define(function(require) {
         onCollide: function(obj) {
             if(obj instanceof Enemy) {
                 var player = this._scene.getObject('player');
-                player.incrementScore(obj.points);
+                if (player) {
+                    player.incrementScore(obj.points);
+                }
                 obj.remove();
                 this.remove();
             }
