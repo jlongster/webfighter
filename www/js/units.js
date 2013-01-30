@@ -125,11 +125,16 @@ define(function(require) {
 
         update: function(dt) {
             this.parent(dt);
+            // Remove objects after they leave the screen.
+            if (this.pos[0] < this._scene.camera.pos[0] - this.size[0]) {
+                this.remove();
+            }
         },
 
         onCollide: function(obj) {
             if(obj instanceof Player) {
                 obj.remove();
+                this.remove();
             }
         },
 
