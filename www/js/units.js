@@ -119,6 +119,24 @@ define(function(require) {
         collide: true
     });
 
+    var EnemyLaser = Laser.extend({
+        update: function(dt) {
+            this.pos[0] -= 300 * dt;
+            if (this.pos[0] < this._scene.camera.pos[0] - this.size[0]) {
+                this.remove();
+            }
+        },
+
+        onCollide: function(obj) {
+            if(obj instanceof Player) {
+                obj.remove();
+                this.remove();
+            }
+        },
+
+        collide: true
+    });
+
     var Enemy = SceneObject.extend({
         init: function(renderer, pos, size, sprite) {
             this._renderer = renderer;
@@ -181,6 +199,25 @@ define(function(require) {
                            6,
                            [0, 1, 2, 3])
             );
+            this.lastShot = 0;
+        },
+
+        shoot: function() {
+            if((Date.now() - this.lastShot > 500) &&
+               (this.pos[0] < this._renderer.width + this._scene.camera.pos[0])) {
+                this._scene.addObject(new EnemyLaser(
+                    this._renderer,
+                    [this.pos[0] - 10, /* EnemyLaser.size[0] */
+                     this.pos[1] + this.size[1] / 2]
+                ));
+            }
+        },
+
+        update: function(dt) {
+            this.parent(dt);
+            if(Math.random() < 0.005) {
+                this.shoot();
+            }
         },
 
         points: 100
