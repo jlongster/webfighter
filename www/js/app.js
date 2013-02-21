@@ -38,7 +38,7 @@ define(function(require) {
         scene.update(dt);
         renderer.render(scene);
 
-        //renderer.debug(scene);
+        renderer.debug(scene, 'Trigger');
 
         last = now;
         requestAnimFrame(heartbeat);

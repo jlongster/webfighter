@@ -1,36 +1,30 @@
 define(function(require) {
     var units = require('./units');
+    
 
     function init(scene, renderer) {
+        var h = renderer.height;
+
         scene.addObject(new units.Floor(renderer));
+        level1(scene, renderer);
 
-        var enemy = new units.Boss(renderer, [200, 0]);
-        scene.addObject(enemy);
-
-        enemy = new units.Boss(renderer, [200, 100]);
-        scene.addObject(enemy);
-
-        enemy = new units.Boss(renderer, [200, 200]);
-        scene.addObject(enemy);
-
-        var zero = renderer.height / 2;
-        var amplitude = zero - 25;
-        for(var i=0; i<400; i++) {
-            enemy = new units.Mook(
-                renderer,
-                [300 + i*30, zero - Math.sin(i/10) * amplitude]);
-            scene.addObject(enemy);
-        }
-
-        for(var i=0; i<30; i++) {
-            enemy = new units.MovingMook(
-                renderer,
-                [600 + i*60, zero + Math.cos(i/5) * amplitude / 2]);
-            scene.addObject(enemy);
-        }
+        scene.addObject(new units.Trigger(200, renderer.height, function() {
+            for(var i=0; i<10; i++) {
+                scene.addObject(
+                    new units.Mook(renderer, [400 + Math.random() * 50,
+                                              (Math.random() * 2 - 1 ) * h/2])
+                );
+            }
+        }));
 
         var player = new units.Player(renderer, [50, 50]);
         scene.addObject(player);
+    }
+
+    function level1(scene, renderer) {
+        scene.addObject(new units.Boss(renderer, [500, 20]));
+        scene.addObject(new units.Boss(renderer, [500, 100]));
+        scene.addObject(new units.Boss(renderer, [500, 200]));
     }
 
     return { init: init };

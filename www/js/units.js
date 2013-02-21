@@ -277,6 +277,21 @@ define(function(require) {
         }
     });
 
+    var Trigger = SceneObject.extend("Trigger", { 
+        init: function(distance, height, func) {
+            this.parent([distance, 0],
+                        [10, height]);
+            this.func = func;
+        },
+
+        onCollide: function(obj) {
+            if(obj instanceof Player) {
+                this.func();
+                this.remove();
+            }
+        }
+    });
+
     return {
         Player: Player,
         Laser: Laser,
@@ -285,6 +300,7 @@ define(function(require) {
         Boss: Boss,
         Mook: Mook,
         MovingMook: MovingMook,
-        Floor: Floor
+        Floor: Floor,
+        Trigger: Trigger
     };
 });

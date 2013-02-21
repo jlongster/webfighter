@@ -11,15 +11,11 @@ define(function(require) {
             this.objects = [];
             this.objectsById = {};
             this.camera = camera;
+            this.addedObjects = [];
         },
 
         addObject: function(obj) {
-            this.objects.push(obj);
-            obj._scene = this;
-
-            if(obj.id) {
-                this.objectsById[obj.id] = obj;
-            }
+            this.addedObjects.push(obj);
         },
 
         getObject: function(id) {
@@ -27,15 +23,7 @@ define(function(require) {
         },
 
         removeObject: function(obj) {
-            var idx = this.objects.indexOf(obj);
-            if(idx !== -1) {
-                this.objects.splice(idx, 1);
-                obj._scene = null;
-
-                if(obj.id) {
-                    this.objectsById[obj.id] = null;
-                }
-            }
+            obj._sceneRemove = true;
         },
 
         getScreenPos: function(pos) {
@@ -47,11 +35,34 @@ define(function(require) {
         update: function(dt) {
             this.camera.update(dt);
 
+            // TODO: might be able to optimize this and not create a
+            // new array each time
+            var nextObjects = [];
+
             var objs = this.objects;
-            for(var i=objs.length - 1; i >= 0; i--) {
+            for(var i=0, l=objs.length; i<l; i++) {
                 objs[i].update(dt);
+
+                if(!objs[i]._sceneRemove) {
+                    nextObjects.push(objs[i]);
+                }
             }
 
+            this.objects = nextObjects;
+
+            var added = this.addedObjects;
+            for(var i=0, l=added.length; i<l; i++) {
+                var obj = added[i];
+
+                this.objects.push(obj);
+                obj._scene = this;
+
+                if(obj.id) {
+                    this.objectsById[obj.id] = obj;
+                }
+            }
+
+            this.addedObjects = [];
             this.checkCollisions();
         },
 

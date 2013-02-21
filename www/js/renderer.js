@@ -71,7 +71,7 @@ define(function(require) {
             }
         },
 
-        debug: function(scene) {
+        debug: function(scene, type) {
             if(!scene.camera) {
                 console.log('WARNING! No camera in the scene, so nothing ' +
                             'will be displayed.');
@@ -87,8 +87,17 @@ define(function(require) {
             var objs = scene.objects;
             for(var i=0, l=objs.length; i<l; i++) {
                 var obj = objs[i];
-                ctx.strokeRect(obj.pos[0], obj.pos[1],
-                               obj.size[0], obj.size[1]);
+
+                if(type) {
+                    if(type == obj.typename) {
+                        ctx.strokeRect(obj.pos[0], obj.pos[1],
+                                       obj.size[0], obj.size[1]);
+                    }
+                }
+                else {
+                    ctx.strokeRect(obj.pos[0], obj.pos[1],
+                                   obj.size[0], obj.size[1]);
+                }
             }
         }
     });

@@ -18,6 +18,10 @@ define(function(require) {
             if(this.sprite) {
                 this.sprite.render(ctx);
             }
+            else if(this.color) {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(0, 0, this.size[0], this.size[1]);
+            }
         },
 
         remove: function() {
