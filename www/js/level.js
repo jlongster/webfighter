@@ -1,30 +1,31 @@
 define(function(require) {
-    var units = require('./units');
-    
+    var units = require('./units');    
+
+    function getOffscreenX(scene, renderer) {
+        return scene.camera.pos[0] + renderer.width;
+    }
 
     function init(scene, renderer) {
-        var h = renderer.height;
-
-        scene.addObject(new units.Floor(renderer));
+        scene.addObject(new units.Floor(renderer, 'img/background.png'));
+        scene.addObject(new units.Floor(renderer, 'img/background2.png'));
+        scene.addObject(new units.Floor(renderer, 'img/background3.png'));
         level1(scene, renderer);
-
-        scene.addObject(new units.Trigger(200, renderer.height, function() {
-            for(var i=0; i<10; i++) {
-                scene.addObject(
-                    new units.Mook(renderer, [400 + Math.random() * 50,
-                                              (Math.random() * 2 - 1 ) * h/2])
-                );
-            }
-        }));
 
         var player = new units.Player(renderer, [50, 50]);
         scene.addObject(player);
     }
 
     function level1(scene, renderer) {
-        scene.addObject(new units.Boss(renderer, [500, 20]));
-        scene.addObject(new units.Boss(renderer, [500, 100]));
-        scene.addObject(new units.Boss(renderer, [500, 200]));
+        var h = renderer.height;
+
+        scene.addObject(new units.Trigger(0, 500, renderer.height, function() {
+            if(Math.random() < .01) {
+                scene.addObject(
+                    new units.Mook(renderer, [getOffscreenX(scene, renderer) + Math.random() * 50,
+                                              Math.random() * h])
+                );
+            }
+        }));
     }
 
     return { init: init };

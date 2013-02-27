@@ -16,8 +16,7 @@ define(function(require) {
 
     function init() {
         var camera = new Camera();
-        renderer = new Renderer(window.innerWidth / 2.0,
-                                window.innerHeight / 2.0);
+        renderer = new Renderer(480/320);
         scene = new Scene(camera);
 
         level.init(scene, renderer);
@@ -38,7 +37,7 @@ define(function(require) {
         scene.update(dt);
         renderer.render(scene);
 
-        renderer.debug(scene, 'Trigger');
+        //renderer.debug(scene, 'Trigger');
 
         last = now;
         requestAnimFrame(heartbeat);
@@ -46,8 +45,9 @@ define(function(require) {
 
     resources.load([
         'img/bosses.png',
-        'img/dungeon.png',
-        'img/floor.png'
+        'img/background.png',
+        'img/background2.png',
+        'img/background3.png'
     ]);
     resources.onReady(init);
 });

@@ -230,44 +230,51 @@ define(function(require) {
 
     var MovingMook = Mook.extend({
         update: function(dt) {
-            this.pos[0] -= 30 * dt;
+             this.pos[0] -= 30 * dt;
             this.parent(dt);
         }
     });
 
     var Floor = SceneObject.extend({
-        init: function(renderer) {
-            // Add an additional sprite so that we can scroll it
-            var size = [renderer.width + 16,
-                         renderer.height];
+        init: function(renderer, imgName) {
+            this.imgName = imgName;
+            var img = resources.get(this.imgName);
 
-            this.parent(
-                null,
-                size,
-                new Sprite('img/dungeon.png', [333, 897], [16, 16], 0));
+            // Add an additional sprite so that we can scroll it
+            var size = [renderer.width + img.width,
+                        renderer.height];
+
+            this.parent(null, size);
 
             var _this = this;
             renderer.onResize(function(w, h) {
-                _this.size[0] = w + sprite.size[0];
-                _this.size[1] = h;
+                // _this.size[0] = w + sprite.size[0];
+                // _this.size[1] = h;
             });
         },
 
         update: function(dt) {
-            this.sprite.update(dt);
+            var img = resources.get(this.imgName);
+
+            if(this.imgName == 'img/background2.png') {
+                this.pos[0] -= 15*dt;
+            }
+            else if(this.imgName == 'img/background3.png') {
+                this.pos[0] -= 30*dt;
+            }
 
             // Get the screen position, and if it's scrolled more than
             // the size of the sprite, snap it back to [0, 0]
             var pos = this._scene.getScreenPos(this.pos);
-            var sizeX = this.sprite.size[0];
-            if(pos[0] < -sizeX) {
+            var sizeX = this.size[0];
+            if(pos[0] < -img.width) {
                 this.pos[0] += -pos[0];
             }
         },
 
         render: function(ctx) {
             if(!this.pattern) {
-                this.pattern = ctx.createPattern(resources.get('img/floor.png'),
+                this.pattern = ctx.createPattern(resources.get(this.imgName),
                                                 'repeat');
             }
 
@@ -278,16 +285,15 @@ define(function(require) {
     });
 
     var Trigger = SceneObject.extend("Trigger", { 
-        init: function(distance, height, func) {
+        init: function(distance, width, height, func) {
             this.parent([distance, 0],
-                        [10, height]);
+                        [width, height]);
             this.func = func;
         },
 
         onCollide: function(obj) {
             if(obj instanceof Player) {
                 this.func();
-                this.remove();
             }
         }
     });

@@ -11,24 +11,38 @@ var requestAnimFrame = (function(){
 
 define(function(require) {
     var Obj = require('./object');
+
+    function optimalSize(aspect) {
+        var targetWidth = window.innerHeight * aspect;
+
+        if(targetWidth < window.innerWidth) {
+            return [targetWidth, window.innerHeight];
+        }
+        else {
+            return [window.innerWidth, (1 / aspect) * window.innerWidth];
+        }
+    }
     
     return Obj.extend({
-        init: function(w, h) {
+        init: function(aspect) {
             var canvas = document.getElementById('canvas');
-            this.width = canvas.width = w;
-            this.height = canvas.height = h;
+            var size = optimalSize(aspect);
 
+            this.width = canvas.width = size[0];
+            this.height = canvas.height = size[1];
             this.ctx = canvas.getContext('2d');
             this.canvas = canvas;
             this.resizeFuncs = [];
 
+            this.width = 100;
+            this.height = (1 / aspect) * this.width;
+
             var _this = this;
             window.onresize = function() {
-                var w = window.innerWidth / 2;
-                var h = window.innerHeight / 2;
+                var size = optimalSize(aspect);
 
-                _this.width = _this.canvas.width = w;
-                _this.height = _this.canvas.height = h;
+                _this.canvas.width = size[0];
+                _this.canvas.height = size[1];
                 _this.fireResize();
             };
         },
