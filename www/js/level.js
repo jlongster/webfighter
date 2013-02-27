@@ -18,7 +18,7 @@ define(function(require) {
     function level1(scene, renderer) {
         var h = renderer.height;
 
-        scene.addObject(new units.Trigger(0, 500, renderer.height, function() {
+        scene.addObject(new units.Trigger(0, 2000, renderer.height, function() {
             if(Math.random() < .02) {
                 scene.addObject(
                     new units.Mook(renderer, [getOffscreenX(scene, renderer) + Math.random() * 50,

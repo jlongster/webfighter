@@ -9,12 +9,12 @@ define(function(require) {
         init: function(renderer, pos) {
             this.parent(
                 pos,
-                [32, 32],
+                [51, 17],
                 new Sprite('img/sprites.png',
                            [0, 0],
-                           [32, 32],
+                           [55, 17],
                            3,
-                           [0])
+                           [0, 0, 0, 1, 2, 3])
             );
             this._renderer = renderer;
             this.lastShot = 0;
@@ -98,9 +98,7 @@ define(function(require) {
                         [10, 5],
                         new Sprite('img/sprites.png',
                                    [0, 32],
-                                   [10, 5],
-                                   3,
-                                   [0, 1, 2]));
+                                   [10, 5]));
             this._renderer = renderer;
         },
 
@@ -206,14 +204,16 @@ define(function(require) {
             this.parent(
                 renderer,
                 pos,
-                [35, 50],
+                [36, 36],
                 new Sprite('img/sprites.png',
                            [0, 64],
-                           [32, 32],
+                           [32, 109],
                            6,
-                           [0, 1, 2, 3])
+                           [0, 1, 2, 3, 2, 1])
             );
             this.lastShot = 0;
+            this.age = 0;
+            this.startingY = this.pos[1];
         },
 
         shoot: function() {
@@ -230,8 +230,12 @@ define(function(require) {
         update: function(dt) {
             this.parent(dt);
             if(Math.random() < 0.005) {
-                this.shoot();
+                //this.shoot();
             }
+
+            this.age += dt;
+            this.pos[1] = this.startingY + Math.sin(this.age * 3) * 50;
+            this.pos[0] -= 50*dt;
         },
 
         points: 100
