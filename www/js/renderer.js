@@ -12,39 +12,42 @@ var requestAnimFrame = (function(){
 define(function(require) {
     var Obj = require('./object');
 
-    function optimalSize(aspect) {
-        var targetWidth = window.innerHeight * aspect;
-
-        if(targetWidth < window.innerWidth) {
-            return [targetWidth, window.innerHeight];
-        }
-        else {
-            return [window.innerWidth, (1 / aspect) * window.innerWidth];
-        }
-    }
-    
     return Obj.extend({
-        init: function(aspect) {
+        init: function() {
             var canvas = document.getElementById('canvas');
-            var size = optimalSize(aspect);
+            var sizeWrapper = document.getElementById('size-wrapper');
 
-            this.width = canvas.width = size[0];
-            this.height = canvas.height = size[1];
             this.ctx = canvas.getContext('2d');
             this.canvas = canvas;
             this.resizeFuncs = [];
-
-            this.width = 100;
-            this.height = (1 / aspect) * this.width;
+            this.optimizeSize(canvas, sizeWrapper);
 
             var _this = this;
             window.onresize = function() {
-                var size = optimalSize(aspect);
-
-                _this.canvas.width = size[0];
-                _this.canvas.height = size[1];
-                _this.fireResize();
+                _this.optimizeSize(canvas, sizeWrapper);
             };
+        },
+
+        optimizeSize: function(canvas, wrapper) {
+            // Optimized for mobile
+            if(window.innerWidth <= 480 && window.innerHeight <= 320) {
+                this.width = canvas.width = window.innerWidth;
+                this.height = canvas.height = window.innerHeight;
+
+                wrapper.style.width = this.width + 'px';
+                wrapper.style.height = this.height + 'px';
+            }
+            else {
+                var aspect = window.innerWidth / window.innerHeight;
+
+                this.width = canvas.width = 480;
+                this.height = canvas.height = 320;
+
+                var zoomFactor = Math.min(Math.floor(window.innerWidth / 480) || 1,
+                                          Math.floor(window.innerHeight / 320) || 1);
+                wrapper.style.width = (this.width * zoomFactor) + 'px';
+                wrapper.style.height = (this.height * zoomFactor) + 'px';
+            }
         },
 
         onResize: function(func) {

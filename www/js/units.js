@@ -9,12 +9,12 @@ define(function(require) {
         init: function(renderer, pos) {
             this.parent(
                 pos,
-                [18, 18],
-                new Sprite('img/bosses.png',
-                           [211, 483],
-                           [27, 19],
+                [32, 32],
+                new Sprite('img/sprites.png',
+                           [0, 0],
+                           [32, 32],
                            3,
-                           [0, 1])
+                           [0])
             );
             this._renderer = renderer;
             this.lastShot = 0;
@@ -65,11 +65,12 @@ define(function(require) {
 
         shoot: function() {
             if(Date.now() - this.lastShot > 100) {
-                this._scene.addObject(new Laser(
-                    this._renderer,
-                    [this.pos[0] + this.size[0],
-                     this.pos[1] + this.size[1] / 2]
-                ));
+                var laser = new Laser(
+                    this._renderer
+                );
+                laser.pos = [this.pos[0] + this.size[0],
+                             this.pos[1] + this.size[1] / 2 - laser.size[1] / 2];
+                this._scene.addObject(laser);
 
                 this.lastShot = Date.now();
             }
@@ -93,7 +94,13 @@ define(function(require) {
 
     var Laser = SceneObject.extend({
         init: function(renderer, pos) {
-            this.parent(pos, [10, 5]);
+            this.parent(pos,
+                        [10, 5],
+                        new Sprite('img/sprites.png',
+                                   [0, 32],
+                                   [10, 5],
+                                   3,
+                                   [0, 1, 2]));
             this._renderer = renderer;
         },
 
@@ -106,9 +113,6 @@ define(function(require) {
             }
         },
 
-        render: function(ctx) {
-            ctx.fillRect(0, 0, 10, 5);
-        },
 
         onCollide: function(obj) {
             if(obj instanceof Enemy) {
@@ -125,6 +129,11 @@ define(function(require) {
     });
 
     var EnemyLaser = Laser.extend({
+        init: function(renderer, pos) {
+            this.parent(renderer, pos);
+            this.sprite.flipHorizontal(true);
+        },
+
         update: function(dt) {
             this.pos[0] -= 300 * dt;
             if (this.pos[0] < this._scene.camera.pos[0] - this.size[0]) {
@@ -198,9 +207,9 @@ define(function(require) {
                 renderer,
                 pos,
                 [35, 50],
-                new Sprite('img/bosses.png',
-                           [3, 154],
-                           [40, 35],
+                new Sprite('img/sprites.png',
+                           [0, 64],
+                           [32, 32],
                            6,
                            [0, 1, 2, 3])
             );
@@ -245,7 +254,7 @@ define(function(require) {
                         renderer.height];
 
             this.parent(null, size);
-
+    
             var _this = this;
             renderer.onResize(function(w, h) {
                 // _this.size[0] = w + sprite.size[0];

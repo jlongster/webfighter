@@ -16,7 +16,7 @@ define(function(require) {
 
     function init() {
         var camera = new Camera();
-        renderer = new Renderer(480/320);
+        renderer = new Renderer();
         scene = new Scene(camera);
 
         level.init(scene, renderer);
@@ -37,6 +37,7 @@ define(function(require) {
         scene.update(dt);
         renderer.render(scene);
 
+        //renderer.debug(scene);
         //renderer.debug(scene, 'Trigger');
 
         last = now;
@@ -45,6 +46,7 @@ define(function(require) {
 
     resources.load([
         'img/bosses.png',
+        'img/sprites.png',
         'img/background.png',
         'img/background2.png',
         'img/background3.png'
