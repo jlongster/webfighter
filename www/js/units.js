@@ -72,6 +72,17 @@ define(function(require) {
                              this.pos[1] + this.size[1] / 2 - laser.size[1] / 2];
                 this._scene.addObject(laser);
 
+                if(this.superWeapon) {
+                    for(var i=0; i<5; i++) {
+                        var laser = new Laser(
+                            this._renderer
+                        );
+                        laser.pos = [this.pos[0] + this.size[0],
+                                     this.pos[1] + this.size[1] / 2 + Math.random() * 50 - 25];
+                        this._scene.addObject(laser);
+                    }
+                }
+
                 this.lastShot = Date.now();
             }
         },
@@ -200,20 +211,21 @@ define(function(require) {
     });
 
     var Mook = Enemy.extend({
-        init: function(renderer, pos) {
+        init: function(renderer, pos, movementType, age) {
             this.parent(
                 renderer,
                 pos,
                 [36, 36],
                 new Sprite('img/sprites.png',
                            [0, 64],
-                           [32, 109],
+                           [32, 45],
                            6,
                            [0, 1, 2, 3, 2, 1])
             );
             this.lastShot = 0;
-            this.age = 0;
-            this.startingY = this.pos[1];
+            this.age = age || 0;
+            this.startingPos = [this.pos[0], this.pos[1]];
+            this.movementType = movementType || 'sine';
         },
 
         shoot: function() {
@@ -229,22 +241,42 @@ define(function(require) {
 
         update: function(dt) {
             this.parent(dt);
+            this.age += dt;
+
             if(Math.random() < 0.005) {
                 //this.shoot();
             }
 
-            this.age += dt;
-            this.pos[1] = this.startingY + Math.sin(this.age * 3) * 50;
-            this.pos[0] -= 50*dt;
+            if(this.movementType == 'circle') {
+                this.startingPos[0] -= 20*dt;
+                this.pos[0] = this.startingPos[0] + Math.sin(this.age * 1.5) * 100;
+                this.pos[1] = this.startingPos[1] + Math.cos(this.age * 1.5) * 100;
+            }
+            else {
+                this.pos[0] -= 75*dt;
+                this.pos[1] = this.startingPos[1] + Math.sin(this.age * 3) * 50;
+            }
         },
 
         points: 100
     });
 
-    var MovingMook = Mook.extend({
-        update: function(dt) {
-             this.pos[0] -= 30 * dt;
-            this.parent(dt);
+    var Powerup = SceneObject.extend({
+        init: function(renderer, pos) {
+            this.parent(pos,
+                        [16, 16],
+                       new Sprite('img/sprites.png',
+                                  [0, 128],
+                                  [16, 16],
+                                  6,
+                                  [0, 1, 2, 1, 0]));
+        },
+
+        onCollide: function(obj) {
+            if(obj instanceof Player) {
+                obj.superWeapon = true;
+                this.remove();
+            }
         }
     });
 
@@ -318,8 +350,8 @@ define(function(require) {
         Enemy: Enemy,
         Boss: Boss,
         Mook: Mook,
-        MovingMook: MovingMook,
         Floor: Floor,
-        Trigger: Trigger
+        Trigger: Trigger,
+        Powerup: Powerup
     };
 });
