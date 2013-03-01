@@ -7,29 +7,38 @@ define(function(require) {
 
     var Player = SceneObject.extend({
         init: function(renderer, pos) {
-            this.parent(
-                pos,
-                [51, 17],
-                new Sprite('img/sprites.png',
-                           [0, 0],
-                           [55, 17],
-                           3,
-                           [0, 0, 0, 1, 2, 3])
-            );
+            this.parent(pos, [27, 19]);
             this._renderer = renderer;
             this.lastShot = 0;
             this.score = 0;
             // TODO: There has to be a better way to do this.
             this._scoreEl = document.getElementsByClassName('score')[0];
+
+            this.sprites = {
+                'default': new Sprite('img/sprites.png',
+                                      [0, 192 + 23 * 2],
+                                      [27, 23]),
+                'up': new Sprite('img/sprites.png',
+                                 [0, 192],
+                                 [27, 23]),
+                'down': new Sprite('img/sprites.png',
+                                 [0, 192 + 23 * 4],
+                                 [27, 23])
+            };
+
+            this.sprite = this.sprites['default'];
         },
 
         update: function(dt) {
+            this.sprite = this.sprites['default'];
+
             // Move with the screen.
             // TODO: Move this magic number to a global somewhere?
             this.pos[0] += 20 * dt;
 
             if(input.isDown('w')) {
                 this.pos[1] -= 250 * dt;
+                this.sprite = this.sprites['up'];
             }
 
             if(input.isDown('a')) {
@@ -38,6 +47,7 @@ define(function(require) {
 
             if(input.isDown('s')) {
                 this.pos[1] += 250 * dt;
+                this.sprite = this.sprites['down'];
             }
 
             if(input.isDown('d')) {
@@ -106,10 +116,10 @@ define(function(require) {
     var Laser = SceneObject.extend({
         init: function(renderer, pos) {
             this.parent(pos,
-                        [10, 5],
+                        [11, 4],
                         new Sprite('img/sprites.png',
                                    [0, 32],
-                                   [10, 5]));
+                                   [11, 4]));
             this._renderer = renderer;
         },
 

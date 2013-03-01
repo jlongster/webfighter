@@ -6,7 +6,7 @@ define(function(require) {
         init: function(url, pos, size, speed, frames, dir) {
             this.pos = pos;
             this.size = size;
-            this.speed = typeof speed === 'number' ? speed : 6;
+            this.speed = typeof speed === 'number' ? speed : 0;
             this.frames = frames;
             this._index = 0;
             this.url = url;
