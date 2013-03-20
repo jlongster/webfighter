@@ -100,6 +100,7 @@ define(function(require) {
         hit: function(obj) {
             // TODO: Decrement life, shield, etc.
             this.remove();
+            this.gameOver = true;
         },
 
         incrementScore: function(pts) {

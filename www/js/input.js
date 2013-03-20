@@ -6,6 +6,7 @@ define(function(require) {
         e.preventDefault();
     }
 
+    var disabled = false;
     var pressedKeys = {};
     var specialKeys = {
         32: 'SPACE',
@@ -42,11 +43,25 @@ define(function(require) {
     }
 
     function isDown(key) {
+        if(disabled) {
+            return false;
+        }
         return pressedKeys[key.toUpperCase()];
     }
 
     function isFiring() {
+        if(disabled) {
+            return false;
+        }
         return isDown('SPACE');
+    }
+
+    function disable() {
+        disabled = true;
+    }
+
+    function enable() {
+        disabled = false;
     }
 
     function init() {
@@ -114,6 +129,8 @@ define(function(require) {
         setKey: setKey,
         isDown: isDown,
         dpadOffset: dpadOffset,
-        isFiring: isFiring
+        isFiring: isFiring,
+        disable: disable,
+        enable: enable
     };
 });
