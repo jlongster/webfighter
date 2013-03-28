@@ -103,6 +103,29 @@ define(function(require) {
         return '[' + vec[0] + ', ' + vec[1] + ']';
     };
 
+    vec2.normalize = function(vec, dest) {
+        if (!dest) { dest = vec; }
+
+        var x = vec[0];
+        var y = vec[1];
+        var len = Math.sqrt(x * x + y * y);
+
+        if(!len) {
+            dest[0] = 0;
+            dest[1] = 0;
+        }
+        else if(len === 1) {
+            dest[0] = x;
+            dest[1] = y;
+            return dest;
+        }
+
+        len = 1 / len;
+        dest[0] = x * len;
+        dest[1] = y * len;
+        return dest;
+    };
+
     function bound(i, min, max) {
         return Math.max(Math.min(i, max), min);
     }

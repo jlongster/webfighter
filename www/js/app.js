@@ -12,23 +12,41 @@ define(function(require) {
     var Camera = require('./camera');
 
     var renderer, scene, paused = false;
-    
+    var clickEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
 
     function getElement(id) {
         return document.getElementById(id);
     }
 
+    function getElementC(class_) {
+        return Array.prototype.slice.call(
+            document.querySelectorAll('.' + class_)
+        );
+    }
+
     function gameOver() {
         getElement('game-over').style.display = 'block';
         getElement('game-over-overlay').style.display = 'block';
-        getElement('controls').style.display = 'none';
+
+        getElementC('button').forEach(function(el) {
+            el.style.display = 'none';
+        });
+
         input.disable();
     }
 
     function restart() {
         getElement('game-over').style.display = 'none';
         getElement('game-over-overlay').style.display = 'none';
-        getElement('controls').style.display = 'block';
+        getElementC('button').forEach(function(el) {
+            el.style.display = 'block';
+        });
+        getElement('continue').style.display = 'none';
+
+        if(paused) {
+            togglePause();
+        }
+
         input.enable();
         init(true);
     }
@@ -36,14 +54,16 @@ define(function(require) {
     function togglePause() {
         if(paused) {
             paused = false;
-            getElement('pause').textContent = 'Pause';
+            getElement('continue').style.display = 'none';
+            getElement('pause').style.display = 'block';
 
             last = Date.now();
             requestAnimFrame(heartbeat);
         }
         else {
             paused = true;
-            getElement('pause').textContent = 'Unpause';
+            getElement('pause').style.display = 'none';
+            getElement('continue').style.display = 'block';
         }
     }
 
@@ -57,8 +77,10 @@ define(function(require) {
         if(!onlyLevel) {
             input.init();
 
-            getElement('play-again').addEventListener('click', restart);
-            getElement('pause').addEventListener('click', togglePause);
+            getElement('play-again').addEventListener(clickEvent, restart);
+            getElement('pause').addEventListener(clickEvent, togglePause);
+            getElement('continue').addEventListener(clickEvent, togglePause);
+            getElement('restart').addEventListener(clickEvent, restart);
 
             heartbeat();
         }

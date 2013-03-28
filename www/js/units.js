@@ -11,8 +11,7 @@ define(function(require) {
             this._renderer = renderer;
             this.lastShot = 0;
             this.score = 0;
-            // TODO: There has to be a better way to do this.
-            this._scoreEl = document.getElementsByClassName('score')[0];
+            this._scoreEl = document.querySelector('.score span');
 
             this.sprites = {
                 'default': new Sprite('img/sprites.png',
@@ -36,31 +35,27 @@ define(function(require) {
             // TODO: Move this magic number to a global somewhere?
             this.pos[0] += 20 * dt;
 
-            if(input.isDown('w')) {
+            if(input.isDown('w') || input.isDown('UP')) {
                 this.pos[1] -= 250 * dt;
                 this.sprite = this.sprites['up'];
             }
 
-            if(input.isDown('a')) {
+            if(input.isDown('a') || input.isDown('LEFT')) {
                 this.pos[0] -= 250 * dt;
             }
 
-            if(input.isDown('s')) {
+            if(input.isDown('s') || input.isDown('DOWN')) {
                 this.pos[1] += 250 * dt;
                 this.sprite = this.sprites['down'];
             }
 
-            if(input.isDown('d')) {
+            if(input.isDown('d') || input.isDown('RIGHT')) {
                 this.pos[0] += 250 * dt;
             }
 
             if(input.isFiring()) {
                 this.shoot();
             }
-
-            // Touch movement.
-            this.pos[0] += input.dpadOffset[0] * 30 * dt;
-            this.pos[1] += input.dpadOffset[1] * 30 * dt;
 
             // Bounds-check position.
             var camX = this._scene.camera.pos[0];
@@ -196,6 +191,8 @@ define(function(require) {
     });
 
     var Boss = Enemy.extend({
+        points: 300,
+
         init: function(renderer, pos) {
             this.parent(
                 renderer,
@@ -216,27 +213,27 @@ define(function(require) {
             this._age += dt;
             var dY = Math.sin(this._age * 2) * 30;
             this.pos[1] = this._startY + dY;
-        },
-
-        points: 300
+        }
     });
 
     var Mook = Enemy.extend({
-        init: function(renderer, pos, movementType, age) {
+        points: 100,
+
+        init: function(renderer, pos, age) {
             this.parent(
                 renderer,
                 pos,
                 [36, 36],
                 new Sprite('img/sprites.png',
-                           [0, 64],
-                           [32, 45],
+                           [32, 192],
+                           [24, 21],
                            6,
-                           [0, 1, 2, 3, 2, 1])
+                           [0, 1],
+                           'vertical')
             );
             this.lastShot = 0;
             this.age = age || 0;
             this.startingPos = [this.pos[0], this.pos[1]];
-            this.movementType = movementType || 'sine';
         },
 
         shoot: function() {
@@ -255,21 +252,40 @@ define(function(require) {
             this.age += dt;
 
             if(Math.random() < 0.005) {
-                //this.shoot();
+                this.shoot();
             }
 
-            if(this.movementType == 'circle') {
-                this.startingPos[0] -= 20*dt;
-                this.pos[0] = this.startingPos[0] + Math.sin(this.age * 1.5) * 100;
-                this.pos[1] = this.startingPos[1] + Math.cos(this.age * 1.5) * 100;
-            }
-            else {
-                this.pos[0] -= 75*dt;
-                this.pos[1] = this.startingPos[1] + Math.sin(this.age * 3) * 50;
-            }
+            this.startingPos[0] -= 20*dt;
+            this.pos[0] = this.startingPos[0] + Math.sin(this.age * 1.5) * 100;
+            this.pos[1] = this.startingPos[1] + Math.cos(this.age * 1.5) * 100;
+        }
+    });
+
+    var Sine = Enemy.extend({
+        points: 100,
+
+        init: function(renderer, pos, age) {
+            this.parent(
+                renderer,
+                pos,
+                [49, 49],
+                new Sprite('img/sprites.png',
+                           [64, 192],
+                           [49, 49],
+                           24,
+                           [0, 1, 2, 3])
+            );
+            this.age = age || 0;
+            this.startingPos = [this.pos[0], this.pos[1]];
         },
 
-        points: 100
+        update: function(dt) {
+            this.parent(dt);
+            this.age += dt;
+
+            this.pos[0] -= 75*dt;
+            this.pos[1] = this.startingPos[1] + Math.sin(this.age * 3) * 50;
+        }
     });
 
     var Powerup = SceneObject.extend({
@@ -304,8 +320,8 @@ define(function(require) {
     
             var _this = this;
             renderer.onResize(function(w, h) {
-                // _this.size[0] = w + sprite.size[0];
-                // _this.size[1] = h;
+                _this.size[0] = w + img.width,
+                _this.size[1] = h;
             });
         },
 
@@ -341,10 +357,15 @@ define(function(require) {
     });
 
     var Trigger = SceneObject.extend("Trigger", { 
-        init: function(distance, width, height, func) {
+        init: function(renderer, distance, width, func) {
             this.parent([distance, 0],
-                        [width, height]);
+                        [width, renderer.height]);
             this.func = func;
+
+            var _this = this;
+            renderer.onResize(function(w, h) {
+                _this.size[1] = h;
+            });
         },
 
         onCollide: function(obj) {
@@ -361,6 +382,7 @@ define(function(require) {
         Enemy: Enemy,
         Boss: Boss,
         Mook: Mook,
+        Sine: Sine,
         Floor: Floor,
         Trigger: Trigger,
         Powerup: Powerup

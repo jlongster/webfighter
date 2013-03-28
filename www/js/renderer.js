@@ -26,16 +26,20 @@ define(function(require) {
             window.onresize = function() {
                 _this.optimizeSize(canvas, sizeWrapper);
             };
+
+            window.onresize();
         },
 
         optimizeSize: function(canvas, wrapper) {
             // Optimized for mobile
-            if(window.innerWidth <= 480 && window.innerHeight <= 320) {
+            if(window.innerWidth <= 600 && window.innerHeight <= 600) {
                 this.width = canvas.width = window.innerWidth;
                 this.height = canvas.height = window.innerHeight;
 
                 wrapper.style.width = this.width + 'px';
                 wrapper.style.height = this.height + 'px';
+
+                document.body.className = 'small';
             }
             else {
                 var aspect = window.innerWidth / window.innerHeight;
@@ -47,7 +51,16 @@ define(function(require) {
                                           Math.floor(window.innerHeight / 320) || 1);
                 wrapper.style.width = (this.width * zoomFactor) + 'px';
                 wrapper.style.height = (this.height * zoomFactor) + 'px';
+
+                if(zoomFactor == 1) {
+                    document.body.className = 'small';
+                }
+                else {
+                    document.body.className = '';
+                }
             }
+
+            this.fireResize();
         },
 
         onResize: function(func) {

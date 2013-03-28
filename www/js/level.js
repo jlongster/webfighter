@@ -16,31 +16,51 @@ define(function(require) {
     }
 
     function level1(scene, renderer) {
-        var h = renderer.height;
-
-        scene.addObject(new units.Trigger(0, 2000, renderer.height, function() {
+        scene.addObject(new units.Trigger(renderer, 0, 500, function() {
             var r = Math.random();
 
             if(r < .01) {
-                for(var i=0; i<10; i++) {
-                    var y = Math.random() * 50;
-                    scene.addObject(
-                        new units.Mook(renderer,
-                                       [getOffscreenX(scene, renderer),
-                                        h * .3 + Math.random() * h * .3 ],
-                                       'circle',
-                                       i/5)
-                    );
-                }
-            }
-            else if(r < .02) {
-                scene.addObject(new units.Mook(renderer,
-                                               [getOffscreenX(scene, renderer),
-                                                Math.random() * h]));
+                addBlade(scene, renderer);
             }
         }));
 
-        scene.addObject(new units.Powerup(renderer, [175, h / 2]));
+        scene.addObject(new units.Trigger(renderer, 500, 1200, function() {
+            var r = Math.random();
+            var func = null;
+
+            if(r < .01) {
+                func = addSwarm;
+            }
+            else if(r < .02) {
+                func = addBlade;
+            }
+
+            if(func) {
+                func(scene, renderer);
+            }
+        }));
+
+        scene.addObject(new units.Powerup(renderer, [925, renderer.height / 1.5]));
+    }
+
+    function addSwarm(scene, renderer) {
+        var h = renderer.height;
+
+        for(var i=0; i<6; i++) {
+            var y = Math.random() * 50;
+            scene.addObject(
+                new units.Mook(renderer,
+                               [getOffscreenX(scene, renderer),
+                                h * .3 + Math.random() * h * .3 ],
+                               i/5)
+            );
+        }
+    }
+
+    function addBlade(scene, renderer) {
+        scene.addObject(new units.Sine(renderer,
+                                       [getOffscreenX(scene, renderer),
+                                        Math.random() * renderer.height]));
     }
 
     return { init: init };

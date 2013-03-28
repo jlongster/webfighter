@@ -2,7 +2,7 @@
 define(function(require) {
     require('./math');
 
-    function p(e) {
+    function preventDefault(e) {
         e.preventDefault();
     }
 
@@ -15,13 +15,12 @@ define(function(require) {
         39: 'RIGHT',
         40: 'DOWN'
     };
-    var dpadOffset = vec2.createFrom(0, 0);
+
     var pressedButtons = {
         'FIRE': false
     };
 
-    window.addEventListener('touchstart', p, true);
-    window.addEventListener('touchmove', p, true);
+    window.addEventListener('touchmove', preventDefault, true);
 
     document.addEventListener('keydown', function(e) {
         setKey(e, true);
@@ -64,57 +63,84 @@ define(function(require) {
         disabled = false;
     }
 
-    function init() {
-        // Initialize the DPad touch control.
-        var dpad = document.getElementsByClassName('dpad')[0];
-        var dpadZero = (function(cur) {
-            var x = cur.clientWidth / 2;
-            var y = cur.clientHeight / 2;
-            while(cur.offsetParent) {
-                x += cur.offsetLeft;
-                y += cur.offsetTop;
-                cur = cur.offsetParent;
-            }
-            return vec2.createFrom(x, y);
-        })(dpad);
-        var dpadBounds = (function(cur) {
-            var x = cur.clientWidth / 2 + 5;
-            var y = cur.clientHeight / 2 + 5;
-            return vec2.createFrom(x, y);
-        })(dpad);
+    function initDpad() {
+        var dpad = document.querySelector('.dpad');
+        var startPos;
 
         dpad.addEventListener('touchstart', function(e) {
-            p(e);
+            e.preventDefault();
+            var touch = e.changedTouches[0];
+            startPos = [touch.clientX, touch.clientY];
+
             dpad.style.backgroundColor = '#ccf';
         }, true);
 
         dpad.addEventListener('touchmove', function dpadMove(e) {
-            p(e);
+            e.preventDefault();
             var touch = e.changedTouches[0];
-            var v = vec2.createFrom(touch.clientX, touch.clientY);
-            vec2.subtract(v, dpadZero, dpadOffset);
-            dpadOffset[0] = bound(dpadOffset[0], -dpadBounds[0], dpadBounds[0]);
-            dpadOffset[1] = bound(dpadOffset[1], -dpadBounds[1], dpadBounds[1]);
+            var pos = [touch.clientX, touch.clientY];
+
+            // normalize the keys
+            pressedKeys['LEFT'] = false;
+            pressedKeys['UP'] = false;
+            pressedKeys['RIGHT'] = false;
+            pressedKeys['DOWN'] = false;
+
+            var offset = vec2.create();
+            vec2.subtract(pos, startPos, offset);
+            vec2.normalize(offset);
+            var axis = [0, 1];
+
+            // find angle of offset vector, and translate it into
+            // space that we expect
+            var angle = ((Math.atan2(offset[1], offset[0])) / Math.PI) * 180;
+            angle = -angle;
+            if(angle < 0) {
+                angle = 360 - Math.abs(angle);
+            }
+
+            if(angle > 290 || angle < 70) {
+                pressedKeys['RIGHT'] = true;
+            }
+
+            if(angle > 20 && angle < 160) {
+                pressedKeys['UP'] = true;
+            }
+
+            if(angle > 110 && angle < 250) {
+                pressedKeys['LEFT'] = true;
+            }
+
+            if(angle > 200 && angle < 340) {
+                pressedKeys['DOWN'] = true;
+            }
         }, true);
 
         dpad.addEventListener('touchend', function dpadEnd(e) {
-            p(e);
+            pressedKeys['LEFT'] = false;
+            pressedKeys['UP'] = false;
+            pressedKeys['RIGHT'] = false;
+            pressedKeys['DOWN'] = false;
+
             dpad.style.backgroundColor = '#fcc';
-            dpadOffset[0] = dpadOffset[1] = 0;
         }, true);
+    }
+
+    function init() {
+        initDpad();
 
         // Initialize the Fire button.
         var fire = document.getElementsByClassName('fire')[0];
 
         function fireStart(e) {
-            p(e);
-            setKey({keyCode: 32}, true);
+            e.preventDefault();
+            pressedKeys['SPACE'] = true;
             fire.style.backgroundColor = '#ccf';
         }
 
         function fireCancel(e) {
-            p(e);
-            setKey({keyCode: 32}, false);
+            e.preventDefault();
+            pressedKeys['SPACE'] = false;
             fire.style.backgroundColor = '#fcc';
         }
 
@@ -128,7 +154,6 @@ define(function(require) {
         init: init,
         setKey: setKey,
         isDown: isDown,
-        dpadOffset: dpadOffset,
         isFiring: isFiring,
         disable: disable,
         enable: enable

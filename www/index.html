@@ -5,7 +5,7 @@
 
     <title></title>
     <meta name="description" content="">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, user-scalable=no, maximum-scale=1">
 
     <!-- Place favicon.ico in the root directory -->
 
@@ -27,14 +27,17 @@
         <button id="play-again">Play Again</button>
       </div>
 
-      <div id="controls">
-        <button id="pause">Pause</button>
+      <div id="appbar">
+        <img class="button" id="pause" src="/img/pause.png" />
+        <img class="button" id="continue" src="/img/play.png" />
+        <img class="button" id="restart" src="/img/restart.png" />
+        <div class="score">Score: <span></span></div>
       </div>
-    </div>
 
-    <div class="score"></div>
-    <div class="input dpad"></div>
-    <div class="input fire"></div>
+      <div class="input dpad"></div>
+      <div class="input fire"></div>
+      <!-- <div class="debug"></div> -->
+    </div>
 
     <!-- Using require.js, a module system for javascript, include the
          js files. This loads "main.js", which in turn can load other
