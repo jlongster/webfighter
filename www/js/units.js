@@ -12,6 +12,9 @@ define(function(require) {
             this.lastShot = 0;
             this.score = 0;
             this._scoreEl = document.querySelector('.score span');
+            this._lifeEl = document.querySelector('.life span');
+            this.weapons = [];
+            this.life = 3;
 
             this.sprites = {
                 'default': new Sprite('img/sprites.png',
@@ -25,6 +28,7 @@ define(function(require) {
                                  [27, 23])
             };
 
+            this._lifeEl.textContent = this.life;
             this.sprite = this.sprites['default'];
         },
 
@@ -69,22 +73,63 @@ define(function(require) {
         },
 
         shoot: function() {
-            if(Date.now() - this.lastShot > 100) {
-                var laser = new Laser(
-                    this._renderer
-                );
-                laser.pos = [this.pos[0] + this.size[0],
-                             this.pos[1] + this.size[1] / 2 - laser.size[1] / 2];
-                this._scene.addObject(laser);
+            var scene = this._scene;
 
-                if(this.superWeapon) {
-                    for(var i=0; i<5; i++) {
-                        var laser = new Laser(
-                            this._renderer
+            var front = [
+                this.pos[0] + this.size[0],
+                this.pos[1] + this.size[1] / 2 - sprites.laser.sprite.size[1] / 2
+            ];
+
+            var center = [
+                this.pos[0] + this.size[0] / 2 - sprites.laser.sprite.size[1] / 2,
+                this.pos[1] + this.size[1] / 2
+            ];
+
+            if(Date.now() - this.lastShot > 100) {
+                scene.addObject(
+                    new Laser(this._renderer, vec2.create(front), [1, 0], 1000)
+                );
+
+                for(var i=0; i<this.weapons.length; i++) {
+                    var w = this.weapons[i];
+
+                    if(w == 'multi') {
+                        for(var j=0; j<5; j++) {
+                            scene.addObject(
+                                new Laser(
+                                    this._renderer,
+                                    vec2.createFrom(
+                                        front[0],
+                                        front[1] + Math.random() * 50 - 25
+                                    ),
+                                    [1, 0],
+                                    1000
+                                )
+                            );
+                        }
+                    }
+                    else if(w == 'side') {
+                        scene.addObject(
+                            new Laser(
+                                this._renderer,
+                                vec2.createFrom(center[0],
+                                                center[1] - this.sprite.size[1]),
+                                [0, -1],
+                                1000,
+                                sprites.upLaser
+                            )
                         );
-                        laser.pos = [this.pos[0] + this.size[0],
-                                     this.pos[1] + this.size[1] / 2 + Math.random() * 50 - 25];
-                        this._scene.addObject(laser);
+
+                        scene.addObject(
+                            new Laser(
+                                this._renderer,
+                                vec2.createFrom(center[0],
+                                                center[1] + this.sprite.size[1]),
+                                [0, 1],
+                                1000,
+                                sprites.downLaser
+                            )
+                        );
                     }
                 }
 
@@ -93,9 +138,14 @@ define(function(require) {
         },
 
         hit: function(obj) {
-            // TODO: Decrement life, shield, etc.
-            this.remove();
-            this.gameOver = true;
+            this.life--;
+            this._lifeEl.textContent = this.life;
+
+            if(this.life <= 0) {
+                this.remove();
+                this._scene.addObject(new Explosion(this.pos));
+                this.gameOver = true;
+            }
         },
 
         incrementScore: function(pts) {
@@ -110,24 +160,30 @@ define(function(require) {
     });
 
     var Laser = SceneObject.extend({
-        init: function(renderer, pos) {
+        init: function(renderer, pos, dir, speed, spriteInfo) {
+            spriteInfo = spriteInfo || sprites.laser;
+            
             this.parent(pos,
-                        [11, 4],
-                        new Sprite('img/sprites.png',
-                                   [0, 32],
-                                   [11, 4]));
+                        spriteInfo.bounds,
+                        spriteInfo.sprite.clone());
             this._renderer = renderer;
+            this.dir = vec2.normalize(dir || [1, 0]);
+            this.speed = speed || 300;
         },
 
         update: function(dt) {
-            this.pos[0] += 1000 * dt;
+            var speed = this.speed;
+            this.pos[0] += this.dir[0] * speed * dt;
+            this.pos[1] += this.dir[1] * speed * dt;
+
             var camX = this._scene.camera.pos[0];
+            var minX = camX - this.size[0];
             var maxX = this._renderer.width + camX - this.size[0];
-            if (this.pos[0] >= maxX) {
+
+            if (this.pos[0] < minX || this.pos[0] > maxX) {
                 this.remove();
             }
         },
-
 
         onCollide: function(obj) {
             if(obj instanceof Enemy) {
@@ -137,6 +193,12 @@ define(function(require) {
                 }
                 obj.remove();
                 this.remove();
+
+                var diffY = sprites.explosion.sprite.size[1] - this.sprite.size[1];
+                var pos = this.pos;
+                pos[1] -= diffY / 2;
+
+                this._scene.addObject(new Explosion(pos));
             }
         },
 
@@ -144,20 +206,13 @@ define(function(require) {
     });
 
     var EnemyLaser = Laser.extend({
-        init: function(renderer, pos) {
-            this.parent(renderer, pos);
+        init: function(renderer, pos, dir, speed) {
+            this.parent(renderer, pos, dir, speed);
             this.sprite.flipHorizontal(true);
         },
 
-        update: function(dt) {
-            this.pos[0] -= 300 * dt;
-            if (this.pos[0] < this._scene.camera.pos[0] - this.size[0]) {
-                this.remove();
-            }
-        },
-
         onCollide: function(obj) {
-            if(obj instanceof Player) {
+            if(obj instanceof Player && !this.isRemoved()) {
                 obj.hit(this);
                 this.remove();
             }
@@ -167,13 +222,22 @@ define(function(require) {
     });
 
     var Enemy = SceneObject.extend({
-        init: function(renderer, pos, size, sprite) {
+        init: function(renderer, pos, size, sprite, components) {
             this._renderer = renderer;
+            this.components = components;
             this.parent(pos, size, sprite);
         },
 
         update: function(dt) {
             this.parent(dt);
+
+            if(this.components) {
+                var c = this.components;
+                for(var i=0, l=c.length; i<l; i++) {
+                    c[i].call(this);
+                }
+            }
+
             // Remove objects after they leave the screen.
             if (this.pos[0] < this._scene.camera.pos[0] - this.size[0]) {
                 this.remove();
@@ -184,6 +248,7 @@ define(function(require) {
             if(obj instanceof Player) {
                 obj.hit(this);
                 this.remove();
+                this._scene.addObject(new Explosion(this.pos));
             }
         },
 
@@ -216,44 +281,24 @@ define(function(require) {
         }
     });
 
-    var Mook = Enemy.extend({
+    var CircleEnemy = Enemy.extend({
         points: 100,
 
-        init: function(renderer, pos, age) {
+        init: function(renderer, spriteInfo, pos, components, age) {
             this.parent(
                 renderer,
                 pos,
-                [36, 36],
-                new Sprite('img/sprites.png',
-                           [32, 192],
-                           [24, 21],
-                           6,
-                           [0, 1],
-                           'vertical')
+                spriteInfo.bounds,
+                spriteInfo.sprite.clone(),
+                components
             );
-            this.lastShot = 0;
             this.age = age || 0;
             this.startingPos = [this.pos[0], this.pos[1]];
-        },
-
-        shoot: function() {
-            if((Date.now() - this.lastShot > 500) &&
-               (this.pos[0] < this._renderer.width + this._scene.camera.pos[0])) {
-                this._scene.addObject(new EnemyLaser(
-                    this._renderer,
-                    [this.pos[0] - 10, /* EnemyLaser.size[0] */
-                     this.pos[1] + this.size[1] / 2]
-                ));
-            }
         },
 
         update: function(dt) {
             this.parent(dt);
             this.age += dt;
-
-            if(Math.random() < 0.005) {
-                this.shoot();
-            }
 
             this.startingPos[0] -= 20*dt;
             this.pos[0] = this.startingPos[0] + Math.sin(this.age * 1.5) * 100;
@@ -261,19 +306,16 @@ define(function(require) {
         }
     });
 
-    var Sine = Enemy.extend({
+    var SineEnemy = Enemy.extend({
         points: 100,
 
-        init: function(renderer, pos, age) {
+        init: function(renderer, spriteInfo, pos, components, age) {
             this.parent(
                 renderer,
                 pos,
-                [49, 49],
-                new Sprite('img/sprites.png',
-                           [64, 192],
-                           [49, 49],
-                           24,
-                           [0, 1, 2, 3])
+                spriteInfo.bounds,
+                spriteInfo.sprite.clone(),
+                components
             );
             this.age = age || 0;
             this.startingPos = [this.pos[0], this.pos[1]];
@@ -288,8 +330,58 @@ define(function(require) {
         }
     });
 
+    var SurpriseEnemy = Enemy.extend({
+        points: 100,
+
+        init: function(renderer, spriteInfo, pos, components, speed, age) {
+            this.parent(renderer,
+                        pos,
+                        spriteInfo.bounds,
+                        spriteInfo.sprite.clone(),
+                        components);
+            this.age = age || 0;
+            this.speed = speed || 20;
+
+            if(this.pos[1] < renderer.height / 2) {
+                this.dir = 'up';
+            }
+            else {
+                this.dir = 'down';
+            }
+        },
+
+        update: function(dt) {
+            this.sprite.update(dt);
+            this.age += dt;
+
+            if(this.dir == 'down') {
+                this.pos[1] -= this.speed * dt;
+            }
+            else {
+                this.pos[1] += this.speed * dt;
+            }
+        }
+    });
+
+    var Explosion = SceneObject.extend({
+        init: function(pos) {
+            this.parent(pos, null,
+                        sprites.explosion.sprite.clone().randomize());
+        },
+
+        update: function(dt) {
+            this.sprite.update(dt);
+
+            if(this.sprite.done) {
+                this.remove();
+            }
+        }
+    });
+
     var Powerup = SceneObject.extend({
-        init: function(renderer, pos) {
+        collide: true,
+
+        init: function(renderer, pos, type) {
             this.parent(pos,
                         [16, 16],
                        new Sprite('img/sprites.png',
@@ -297,11 +389,12 @@ define(function(require) {
                                   [16, 16],
                                   6,
                                   [0, 1, 2, 1, 0]));
+            this.type = type;
         },
 
         onCollide: function(obj) {
             if(obj instanceof Player) {
-                obj.superWeapon = true;
+                obj.weapons.push(this.type);
                 this.remove();
             }
         }
@@ -357,9 +450,11 @@ define(function(require) {
     });
 
     var Trigger = SceneObject.extend("Trigger", { 
-        init: function(renderer, distance, width, func) {
-            this.parent([distance, 0],
-                        [width, renderer.height]);
+        collide: true,
+
+        init: function(renderer, startX, endX, func) {
+            this.parent([startX, 0],
+                        [endX - startX, renderer.height]);
             this.func = func;
 
             var _this = this;
@@ -375,16 +470,77 @@ define(function(require) {
         }
     });
 
+    // sprites
+
+    var sprites = {
+        fireShip: {
+            bounds: [24, 21],
+            sprite: new Sprite('img/sprites.png',
+                               [32, 192],
+                               [24, 21],
+                               6,
+                               [0, 1],
+                               'vertical')
+        },
+        metalShip: {
+            bounds: [24 ,22],
+            sprite: new Sprite('img/sprites.png',
+                               [0, 0],
+                               [24, 22],
+                               6,
+                               [0, 1, 2, 1])
+        },
+        saw: {
+            bounds: [49, 49],
+            sprite: new Sprite('img/sprites.png',
+                               [64, 192],
+                               [49, 49],
+                               24,
+                               [0, 1, 2, 3])
+        },
+        explosion: {
+            bounds: [1, 1],
+            sprite: new Sprite('img/sprites.png',
+                               [0, 64],
+                               [39, 39],
+                               16,
+                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                               null,
+                               true)
+        },
+        laser: {
+            bounds: [11, 4],
+            sprite: new Sprite('img/sprites.png',
+                               [0, 32],
+                               [11, 4])
+        },
+        upLaser: {
+            bounds: [14, 9],
+            sprite: new Sprite('img/sprites.png',
+                               [32, 32],
+                               [14, 9])
+        },
+        downLaser: {
+            bounds: [14, 9],
+            sprite: new Sprite('img/sprites.png',
+                               [32, 41],
+                               [14, 9])
+        }
+    };
+
     return {
         Player: Player,
         Laser: Laser,
         EnemyLaser: EnemyLaser,
         Enemy: Enemy,
         Boss: Boss,
-        Mook: Mook,
-        Sine: Sine,
+        CircleEnemy: CircleEnemy,
+        SineEnemy: SineEnemy,
+        SurpriseEnemy: SurpriseEnemy,
+        Explosion: Explosion,
         Floor: Floor,
         Trigger: Trigger,
-        Powerup: Powerup
+        Powerup: Powerup,
+        sprites: sprites
     };
 });

@@ -3,7 +3,12 @@ define(function(require) {
 
     return SceneObject.extend({
         update: function(dt) {
-            this.pos[0] += 20 * dt;
+            // The boss is at 10000
+            if(this.pos[0] < 10000) {
+                this.pos[0] += 20 * dt;
+            }
+
+            document.querySelector('.debug').innerHTML = this.pos[0];
         },
 
         prerender: function(ctx) {

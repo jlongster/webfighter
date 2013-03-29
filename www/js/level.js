@@ -1,8 +1,16 @@
 define(function(require) {
     var units = require('./units');    
+    var sprites = units.sprites;
 
     function getOffscreenX(scene, renderer) {
         return scene.camera.pos[0] + renderer.width;
+    }
+
+    function getDifficulty(scene) {
+        var player = scene.getObject('player');
+        var x = player.pos[0];
+
+        return Math.floor(x / 10000);
     }
 
     function init(scene, renderer) {
@@ -15,52 +23,129 @@ define(function(require) {
         scene.addObject(player);
     }
 
+    function newPosition(scene, renderer, minY, maxY) {
+        var h = renderer.height;
+        minY = minY || 0;
+        maxY = maxY || 1;
+
+        return [getOffscreenX(scene, renderer),
+                h * minY + Math.random() * h * (maxY - minY)];
+    }
+
     function level1(scene, renderer) {
         scene.addObject(new units.Trigger(renderer, 0, 500, function() {
             var r = Math.random();
 
             if(r < .01) {
-                addBlade(scene, renderer);
+                scene.addObject(
+                    new units.SineEnemy(renderer,
+                                        sprites.fireShip,
+                                        newPosition(scene, renderer),
+                                        [forwardShoot(1.5)])
+                );
             }
         }));
 
         scene.addObject(new units.Trigger(renderer, 500, 1200, function() {
             var r = Math.random();
-            var func = null;
+            var h = renderer.height;
+            var player = scene.getObject('player');
 
-            if(r < .01) {
-                func = addSwarm;
+            if(r < .03) {
+                scene.addObject(
+                    new units.SineEnemy(renderer,
+                                        sprites.saw,
+                                        newPosition(scene, renderer))
+                );
             }
-            else if(r < .02) {
-                func = addBlade;
-            }
-
-            if(func) {
-                func(scene, renderer);
+            else if(r < .05) {
+                scene.addObject(
+                    new units.SineEnemy(renderer,
+                                        sprites.fireShip,
+                                        newPosition(scene, renderer))
+                );
             }
         }));
 
-        scene.addObject(new units.Powerup(renderer, [925, renderer.height / 1.5]));
+        scene.addObject(new units.Trigger(renderer, 1000, 1700, function() {
+            var r = Math.random();
+
+            if(r < .01) {
+                addSwarm(renderer, scene, 6);
+            }
+        }));
+
+        scene.addObject(new units.Trigger(renderer, 1300, 2000, function() {
+            var r = Math.random();
+
+            if(r < .05) {
+                scene.addObject(
+                    new units.SurpriseEnemy(
+                        renderer,
+                        sprites.saw,
+                        [getOffscreenX(scene, renderer) - Math.random() * renderer.width,
+                         Math.random() < .5 ? -sprites.saw.sprite.size[1] : renderer.height]
+                    )
+                );
+            }
+        }));
+
+        scene.addObject(new units.Powerup(renderer,
+                                          [1100, renderer.height * .3],
+                                          'multi'));
+
+        scene.addObject(new units.Powerup(renderer,
+                                          [1600, renderer.height * .6],
+                                         'side'));
+
+        // scene.addObject(new units.Trigger(renderer, 10000, 11000, function() {
+        //     addBoss(renderer, scene);
+        //     this.remove();
+        // }));
     }
 
-    function addSwarm(scene, renderer) {
-        var h = renderer.height;
-
-        for(var i=0; i<6; i++) {
+    function addSwarm(renderer, scene, count) {
+        for(var i=0; i<count; i++) {
             var y = Math.random() * 50;
             scene.addObject(
-                new units.Mook(renderer,
-                               [getOffscreenX(scene, renderer),
-                                h * .3 + Math.random() * h * .3 ],
-                               i/5)
+                new units.CircleEnemy(renderer,
+                                      sprites.metalShip,
+                                      newPosition(scene, renderer, .3, .7),
+                                      [forwardShoot(4)],
+                                      i/5)
             );
         }
     }
 
-    function addBlade(scene, renderer) {
-        scene.addObject(new units.Sine(renderer,
-                                       [getOffscreenX(scene, renderer),
-                                        Math.random() * renderer.height]));
+    function addBoss(renderer, scene) {
+
+    }
+
+    // components
+
+    function forwardShoot(speed) {
+        return function() {
+            if(this.lastShot === undefined) {
+                this.lastShot = (Date.now() - 
+                                 speed * 1000 +
+                                 Math.floor(Math.random() * 2000));
+                return;
+            }
+
+            var now = Date.now();
+
+            if(now - this.lastShot > speed * 1000) {
+                this._scene.addObject(new units.EnemyLaser(
+                    this._renderer,
+                    [this.pos[0],
+                     this.pos[1] + this.size[1] / 2],
+                    [-1, 0],
+                    300
+                ));
+
+                this.lastShot = now;
+            }
+        };
     }
 
     return { init: init };

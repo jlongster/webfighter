@@ -57,7 +57,7 @@ define(function(require) {
             getElement('continue').style.display = 'none';
             getElement('pause').style.display = 'block';
 
-            last = Date.now();
+            lastTime = Date.now();
             requestAnimFrame(heartbeat);
         }
         else {
@@ -68,7 +68,7 @@ define(function(require) {
     }
 
     function init(onlyLevel) {
-        var camera = new Camera();
+        var camera = new Camera([0, 0]);
         renderer = new Renderer();
         scene = new Scene(camera);
 
@@ -86,14 +86,14 @@ define(function(require) {
         }
     }
 
-    var last;
+    var lastTime;
     function heartbeat() {
-        if(!last) {
-            last = Date.now();
+        if(!lastTime) {
+            lastTime = Date.now();
         }
 
         var now = Date.now();
-        var dt = (now - last) / 1000.0;
+        var dt = (now - lastTime) / 1000.0;
 
         scene.update(dt);
         renderer.render(scene);
@@ -106,7 +106,7 @@ define(function(require) {
         }
 
         if(!paused) {
-            last = now;
+            lastTime = now;
             requestAnimFrame(heartbeat);
         }
     }

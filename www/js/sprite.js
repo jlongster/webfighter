@@ -1,54 +1,62 @@
+
 define(function(require) {
     var resources = require('./resources');
-    var Obj = require('./object');
+    
+    function Sprite(url, pos, size, speed, frames, dir, once) {
+        this.pos = pos;
+        this.size = size;
+        this.speed = typeof speed === 'number' ? speed : 0;
+        this.frames = frames;
+        this._index = 0;
+        this.url = url;
+        this.dir = dir || 'horizontal';
+        this.once = once;
+    };
 
-    return Obj.extend({
-        init: function(url, pos, size, speed, frames, dir) {
-            this.pos = pos;
-            this.size = size;
-            this.speed = typeof speed === 'number' ? speed : 0;
-            this.frames = frames;
-            this._index = 0;
-            this.url = url;
-            this.scale = vec2.create([1, 1]);
-            this.dir = dir || 'horizontal';
+    Sprite.prototype = {
+        flipHorizontal: function(val) {
+            this.flipHoriz = val;
+        },
+
+        randomize: function() {
+            if(this.speed > 0) {
+                this._index += Math.random() * this.frames.length * .2;
+            }
+
+            return this;
+        },
+
+        clone: function() {
+            return new Sprite(this.url,
+                              [this.pos[0], this.pos[1]],
+                              [this.size[0], this.size[1]],
+                              this.speed,
+                              this.frames && this.frames.slice(),
+                              this.dir,
+                              this.once);
         },
 
         update: function(dt) {
             this._index += this.speed*dt;
         },
 
-        setScale: function(scale) {
-            this.scale = scale;
-        },
-
-        flipHorizontal: function(val) {
-            this.flipHoriz = val;
-        },
-
-        getNumFrames: function() {
-            if(this.speed === 0) {
-                return 1;
-            }
-            else if(this.frames) {
-                return this.frames.length;
-            }
-            else {
-                return Math.floor(resources.get(this.url).width / this.size[0]);
-            }
-        },
-
-        render: function(ctx, clip) {
+        render: function(ctx) {
             var frame;
-            var max = this.getNumFrames();
-            clip = clip || this.size;
 
-            if(this.frames) {
-                frame = this.frames[Math.floor(this._index) % max];
+            if(this.speed > 0) {
+                var max = this.frames.length;
+                var idx = Math.floor(this._index);
+                frame = this.frames[idx % max];
+
+                if(this.once && idx >= max) {
+                    this.done = true;
+                    return;
+                }
             }
             else {
-                frame = Math.floor(this._index % max);
+                frame = 0;
             }
+
 
             var x = this.pos[0];
             var y = this.pos[1];
@@ -60,13 +68,19 @@ define(function(require) {
                 x += frame * this.size[0];
             }
 
+            var dest = [0, 0];
+
+            if(this.flipHoriz) {
+                ctx.scale(-1, 1);
+            }
+
             ctx.drawImage(resources.get(this.url),
                           x, y,
-                          Math.min(this.size[0], clip[0]),
-                          Math.min(this.size[1], clip[1]),
+                          this.size[0], this.size[1],
                           0, 0,
-                          Math.min(this.size[0], clip[0]),
-                          Math.min(this.size[1], clip[1]));
+                          this.size[0], this.size[1]);
         }
-    });
+    };
+
+    return Sprite;
 });
