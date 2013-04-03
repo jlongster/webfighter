@@ -16,6 +16,10 @@ define(function(require) {
 
         addObject: function(obj) {
             this.addedObjects.push(obj);
+
+            if(obj.id) {
+                this.objectsById[obj.id] = obj;
+            }
         },
 
         getObject: function(id) {
@@ -33,6 +37,8 @@ define(function(require) {
         },
 
         update: function(dt) {
+            document.querySelector('.debug').innerHTML = this.objects.length;
+
             this.camera.update(dt);
 
             // TODO: might be able to optimize this and not create a
@@ -56,10 +62,6 @@ define(function(require) {
 
                 this.objects.push(obj);
                 obj._scene = this;
-
-                if(obj.id) {
-                    this.objectsById[obj.id] = obj;
-                }
             }
 
             this.addedObjects = [];

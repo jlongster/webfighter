@@ -1,5 +1,5 @@
 define(function(require) {
-    var units = require('./units');    
+    var units = require('./units');
     var sprites = units.sprites;
 
     function getOffscreenX(scene, renderer) {
@@ -75,7 +75,7 @@ define(function(require) {
             }
         }));
 
-        scene.addObject(new units.Trigger(renderer, 1300, 2000, function() {
+        scene.addObject(new units.Trigger(renderer, 1300, 1900, function() {
             var r = Math.random();
 
             if(r < .05) {
@@ -98,10 +98,12 @@ define(function(require) {
                                           [1600, renderer.height * .6],
                                          'side'));
 
-        // scene.addObject(new units.Trigger(renderer, 10000, 11000, function() {
-        //     addBoss(renderer, scene);
-        //     this.remove();
-        // }));
+        scene.addObject(new units.Trigger(renderer, 1950, 2000, function() {
+            if(!scene.getObject('boss')) {
+                addBoss(renderer, scene);
+                this.remove();
+            }
+        }));
     }
 
     function addSwarm(renderer, scene, count) {
@@ -118,7 +120,25 @@ define(function(require) {
     }
 
     function addBoss(renderer, scene) {
+        scene.addObject(
+            new units.Boss(renderer, [2250, 100])
+        );
 
+        scene.addObject(
+            new units.BossWeakness(renderer,
+                                   [2250, 250],
+                                   function() {
+                                       return [-100, Math.random() * -100];
+                                   })
+        );
+
+        scene.addObject(
+            new units.BossWeakness(renderer,
+                                   [2250, 50],
+                                   function() {
+                                       return [-100, Math.random() * 100];
+                                   })
+        );
     }
 
     // components
@@ -126,7 +146,7 @@ define(function(require) {
     function forwardShoot(speed) {
         return function() {
             if(this.lastShot === undefined) {
-                this.lastShot = (Date.now() - 
+                this.lastShot = (Date.now() -
                                  speed * 1000 +
                                  Math.floor(Math.random() * 2000));
                 return;

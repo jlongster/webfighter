@@ -68,7 +68,7 @@ define(function(require) {
     }
 
     function init(onlyLevel) {
-        var camera = new Camera([0, 0]);
+        var camera = new Camera([1900, 0]);
         renderer = new Renderer();
         scene = new Scene(camera);
 
@@ -112,7 +112,6 @@ define(function(require) {
     }
 
     resources.load([
-        'img/bosses.png',
         'img/sprites.png',
         'img/background.png',
         'img/background2.png',

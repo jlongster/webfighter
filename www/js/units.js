@@ -33,11 +33,13 @@ define(function(require) {
         },
 
         update: function(dt) {
+            var camera = this._scene.camera;
             this.sprite = this.sprites['default'];
 
             // Move with the screen.
-            // TODO: Move this magic number to a global somewhere?
-            this.pos[0] += 20 * dt;
+            if(camera.pos[0] < 1950) {
+                this.pos[0] += 20 * dt;
+            }
 
             if(input.isDown('w') || input.isDown('UP')) {
                 this.pos[1] -= 250 * dt;
@@ -176,29 +178,31 @@ define(function(require) {
             this.pos[0] += this.dir[0] * speed * dt;
             this.pos[1] += this.dir[1] * speed * dt;
 
-            var camX = this._scene.camera.pos[0];
-            var minX = camX - this.size[0];
-            var maxX = this._renderer.width + camX - this.size[0];
+            var cam = this._scene.camera.pos;
+            var pos = this.pos;
+            var size = this.size;
+            var rw = this._renderer.width;
+            var rh = this._renderer.height;
 
-            if (this.pos[0] < minX || this.pos[0] > maxX) {
+            if(pos[0] < cam[0] - size[0] ||
+               pos[0] > cam[0] + rw ||
+               pos[1] < cam[1] - size[1] ||
+               pos[1] > cam[1] + rh) {
                 this.remove();
             }
         },
 
         onCollide: function(obj) {
             if(obj instanceof Enemy) {
-                var player = this._scene.getObject('player');
-                if (player) {
-                    player.incrementScore(obj.points);
-                }
-                obj.remove();
+                obj.hit();
                 this.remove();
 
-                var diffY = sprites.explosion.sprite.size[1] - this.sprite.size[1];
-                var pos = this.pos;
-                pos[1] -= diffY / 2;
-
-                this._scene.addObject(new Explosion(pos));
+                if(obj.isDead()) {
+                    var player = this._scene.getObject('player');
+                    if (player) {
+                        player.incrementScore(obj.points);
+                    }
+                }
             }
         },
 
@@ -225,6 +229,7 @@ define(function(require) {
         init: function(renderer, pos, size, sprite, components) {
             this._renderer = renderer;
             this.components = components;
+            this.life = 1;
             this.parent(pos, size, sprite);
         },
 
@@ -244,11 +249,29 @@ define(function(require) {
             }
         },
 
+        hit: function() {
+            this.life--;
+
+            if(this.life <= 0) {
+                this.remove();
+                this.dead = true;
+
+                var diffY = sprites.explosion.sprite.size[1] - this.sprite.size[1];
+                var pos = [this.pos[0], this.pos[1]];
+                pos[1] -= diffY / 2;
+
+                this._scene.addObject(new Explosion(pos));
+            }
+        },
+
+        isDead: function() {
+            return this.dead;
+        },
+
         onCollide: function(obj) {
             if(obj instanceof Player) {
                 obj.hit(this);
-                this.remove();
-                this._scene.addObject(new Explosion(this.pos));
+                this.hit();
             }
         },
 
@@ -257,27 +280,52 @@ define(function(require) {
 
     var Boss = Enemy.extend({
         points: 300,
+        id: 'boss',
 
         init: function(renderer, pos) {
             this.parent(
                 renderer,
                 pos,
-                [35, 50],
-                new Sprite('img/bosses.png',
-                           [323, 516],
-                           [40, 50],
-                           2,
-                           [0, 1])
+                [172, 98],
+                new Sprite('img/sprites.png',
+                           [32, 256],
+                           [172, 98])
             );
-            this._startY = pos[1];
-            this._age = 0;
+
+            this.life = 5;
+            this.startY = pos[1];
+            this.age = 0;
+        }
+    });
+
+    var BossWeakness = Enemy.extend({
+        points: 500,
+        
+        init: function(renderer, pos, dirFunc) {
+            this.parent(
+                renderer,
+                pos,
+                [42, 42],
+                new Sprite('img/sprites.png',
+                           [224, 256],
+                           [42, 42])
+            );
+            this.dirFunc = dirFunc;
+            this.life = 100;
         },
 
         update: function(dt) {
-            this.parent(dt);
-            this._age += dt;
-            var dY = Math.sin(this._age * 2) * 30;
-            this.pos[1] = this._startY + dY;
+            var scene = this._scene;
+            var renderer = this._renderer;
+
+            if(Math.random() < .03) {
+                scene.addObject(new StraightEnemy(
+                    renderer,
+                    sprites.fireball,
+                    [this.pos[0], this.pos[1]],
+                    this.dirFunc()
+                ));
+            }
         }
     });
 
@@ -327,6 +375,25 @@ define(function(require) {
 
             this.pos[0] -= 75*dt;
             this.pos[1] = this.startingPos[1] + Math.sin(this.age * 3) * 50;
+        }
+    });
+
+    var StraightEnemy = Enemy.extend({
+        points: 0,
+
+        init: function(renderer, spriteInfo, pos, dir) {
+            this.parent(
+                renderer,
+                pos,
+                spriteInfo.bounds,
+                spriteInfo.sprite.clone()
+            );
+            this.dir = dir;
+        },
+
+        update: function(dt) {
+            this.pos[0] += this.dir[0] * dt;
+            this.pos[1] += this.dir[1] * dt;
         }
     });
 
@@ -419,13 +486,16 @@ define(function(require) {
         },
 
         update: function(dt) {
+            var camera = this._scene.camera;
             var img = resources.get(this.imgName);
 
-            if(this.imgName == 'img/background2.png') {
-                this.pos[0] -= 15*dt;
-            }
-            else if(this.imgName == 'img/background3.png') {
-                this.pos[0] -= 30*dt;
+            if(camera.pos[0] < 1950) {
+                if(this.imgName == 'img/background2.png') {
+                    this.pos[0] -= 15*dt;
+                }
+                else if(this.imgName == 'img/background3.png') {
+                    this.pos[0] -= 30*dt;
+                }
             }
 
             // Get the screen position, and if it's scrolled more than
@@ -490,6 +560,15 @@ define(function(require) {
                                6,
                                [0, 1, 2, 1])
         },
+        fireball: {
+            bounds: [56, 42],
+            sprite: new Sprite('img/sprites.png',
+                               [288, 128],
+                               [56, 42],
+                               12,
+                               [0, 1, 2, 3],
+                               'vertical')
+        },
         saw: {
             bounds: [49, 49],
             sprite: new Sprite('img/sprites.png',
@@ -534,8 +613,10 @@ define(function(require) {
         EnemyLaser: EnemyLaser,
         Enemy: Enemy,
         Boss: Boss,
+        BossWeakness: BossWeakness,
         CircleEnemy: CircleEnemy,
         SineEnemy: SineEnemy,
+        StraightEnemy: StraightEnemy,
         SurpriseEnemy: SurpriseEnemy,
         Explosion: Explosion,
         Floor: Floor,
