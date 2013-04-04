@@ -18,3 +18,13 @@ There are 3 main components: scene, renderer, and sprite. The `Scene` object imp
 Let's take a step back and think about art. Games are complex enough technically, who has time to sit down and develop a bunch of awesome art for it? Maybe you have an artist friend who will help out. If you do, awesome!
 
 If you don't have any artist friends willing to help out, I would highly encourage you to use existing art released for free. You can look around [HasGraphics](http://hasgraphics.com/) for a graphics set that you like. As mentioned previously, webfighter reuses the [Tyrian graphics](http://www.lostgarden.com/2007/04/free-game-graphics-tyrian-ships-and.html) for some awesome ship and enemy art.
+
+## High-Level Overview
+
+Let's start with [app.js](https://github.com/jlongster/webfighter/blob/master/www/js/app.js). This is the first file loaded. We are using [RequireJS](http://requirejs.org/) for javascript modules, and the first part simple requires all of the necessary components.
+
+Next, you will find several functions which alter the state of the game, such as `gameOver` and `gameWon`. This stop the game and display a message to the user. Other functions like `togglePause` and `restart` have obvious purposes.
+
+Near the end is the `[init](https://github.com/jlongster/webfighter/blob/master/www/js/app.js#L105)` function which constructs the game and starts it. This creates a camera, renderer, and scene object, and adds everything to the scene, as well adding event handlers to the UI if this is the first run.
+
+Lastly, the `[heartbeat](https://github.com/jlongster/webfighter/blob/master/www/js/app.js#L135)` function is what pumps life into our game every frame. It tells the scene to update, the renderer to render the scene, and checks to see if the game is over. An important note is that it uses `[requestAnimationFrame](https://developer.mozilla.org/en-US/docs/DOM/window.requestAnimationFrame)` to [call itself](https://github.com/jlongster/webfighter/blob/master/www/js/app.js#L158) at around 60fps, or whatever is appropriate for the user's setup.
