@@ -104,7 +104,7 @@ define(function(require) {
     }
 
     function init(onlyLevel) {
-        var camera = new Camera([1950, 0]);
+        var camera = new Camera([0, 0]);
         renderer = new Renderer();
         scene = new Scene(camera);
 
