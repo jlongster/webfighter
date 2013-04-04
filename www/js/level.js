@@ -142,8 +142,6 @@ define(function(require) {
             var totalLife = weak1.life + weak2.life;
             var r = Math.random();
 
-            document.querySelector('.debug').innerHTML = totalLife;
-
             if(totalLife < 1800) {
                 if(r < .03) {
                     scene.addObject(

@@ -24,6 +24,38 @@ define(function(require) {
         );
     }
 
+    function fullscreen() {
+        var d = document;
+        var b = d.body;
+        var isFullscreen = (d.fullscreenElement ||
+                            d.mozFullScreenElement ||
+                            d.webkitFullscreenElement);
+
+        if(!isFullscreen) {
+            if(b.requestFullScreen) {
+                b.requestFullScreen();
+            }
+            else if(b.mozRequestFullScreen) {
+                document.querySelector('.debug').innerHTML = b.mozRequestFullScreen;
+                b.mozRequestFullScreen();
+            }
+            else if(b.webkitRequestFullScreen()) {
+                b.webkitRequestFullScreen();
+            }
+        }
+        else {
+            if(d.cancelFullScreen) {
+                d.cancelFullScreen();
+            }
+            else if(d.mozCancelFullScreen) {
+                d.mozCancelFullScreen();
+            }
+            else if(d.webkitCancelFullScreen) {
+                d.webkitCancelFullScreen();
+            }            
+        }
+    }
+
     function gameOver() {
         getElement('game-over').style.display = 'block';
         getElement('game-over-overlay').style.display = 'block';
@@ -73,7 +105,7 @@ define(function(require) {
     }
 
     function init(onlyLevel) {
-        var camera = new Camera([1950, 0]);
+        var camera = new Camera([0, 0]);
         renderer = new Renderer();
         scene = new Scene(camera);
 
@@ -86,6 +118,7 @@ define(function(require) {
             getElement('pause').addEventListener(clickEvent, togglePause);
             getElement('continue').addEventListener(clickEvent, togglePause);
             getElement('restart').addEventListener(clickEvent, restart);
+            getElement('fullscreen').addEventListener(clickEvent, fullscreen);
 
             heartbeat();
         }
@@ -103,7 +136,7 @@ define(function(require) {
         scene.update(dt);
         renderer.render(scene);
 
-        renderer.debug(scene);
+        //renderer.debug(scene);
         //renderer.debug(scene, 'Trigger');
 
         if(scene.getObject('player').gameOver) {
