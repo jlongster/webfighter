@@ -166,11 +166,11 @@ define(function(require) {
     var HitBubble = SceneObject.extend({
         init: function(pos) {
             this.parent(
-                pos,
+                null,
                 null,
                 new Sprite('img/sprites.png',
                            [64, 128],
-                           [43, 43])
+                           [55, 55])
             );
 
             this.started = Date.now();
@@ -182,8 +182,8 @@ define(function(require) {
             }
             else {
                 var playerPos = this._scene.getObject('player').pos;
-                this.pos = vec2.createFrom(playerPos[0] - 7,
-                                           playerPos[1] - 12);
+                this.pos = vec2.createFrom(playerPos[0] - 15,
+                                           playerPos[1] - 18);
             }
         },
 
