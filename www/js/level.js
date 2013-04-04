@@ -2,25 +2,10 @@ define(function(require) {
     var units = require('./units');
     var sprites = units.sprites;
 
+    // utility
+
     function getOffscreenX(scene, renderer) {
         return scene.camera.pos[0] + renderer.width;
-    }
-
-    function getDifficulty(scene) {
-        var player = scene.getObject('player');
-        var x = player.pos[0];
-
-        return Math.floor(x / 10000);
-    }
-
-    function init(scene, renderer) {
-        scene.addObject(new units.Floor(renderer, 'img/background.png'));
-        scene.addObject(new units.Floor(renderer, 'img/background2.png'));
-        scene.addObject(new units.Floor(renderer, 'img/background3.png'));
-        level1(scene, renderer);
-
-        var player = new units.Player(renderer, [50, 50]);
-        scene.addObject(player);
     }
 
     function newPosition(scene, renderer, minY, maxY) {
@@ -30,6 +15,18 @@ define(function(require) {
 
         return [getOffscreenX(scene, renderer),
                 h * minY + Math.random() * h * (maxY - minY)];
+    }
+
+    // levels
+
+    function init(scene, renderer) {
+        scene.addObject(new units.Floor(renderer, 'img/background.png'));
+        scene.addObject(new units.Floor(renderer, 'img/background2.png'));
+        scene.addObject(new units.Floor(renderer, 'img/background3.png'));
+        level1(scene, renderer);
+
+        var player = new units.Player(renderer, [50, 50]);
+        scene.addObject(player);
     }
 
     function level1(scene, renderer) {

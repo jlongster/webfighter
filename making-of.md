@@ -28,3 +28,15 @@ Next, you will find several functions which alter the state of the game, such as
 Near the end is the [`init`](https://github.com/jlongster/webfighter/blob/master/www/js/app.js#L105) function which constructs the game and starts it. This creates a camera, renderer, and scene object, and adds everything to the scene, as well adding event handlers to the UI if this is the first run.
 
 Lastly, the [`heartbeat`](https://github.com/jlongster/webfighter/blob/master/www/js/app.js#L135) function is what pumps life into our game every frame. It tells the scene to update, the renderer to render the scene, and checks to see if the game is over. An important note is that it uses [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/DOM/window.requestAnimationFrame) to [call itself](https://github.com/jlongster/webfighter/blob/master/www/js/app.js#L158) at around 60fps, or whatever is appropriate for the user's setup.
+
+## Levels & Enemies
+
+The file [`units.js`](https://github.com/jlongster/webfighter/blob/master/www/js/units.js) defines every single entity in the game. An entity is an object with a `render` and `update` method. Technically the system implements this as the [`SceneObject`](https://github.com/jlongster/webfighter/blob/master/www/js/sceneobject.js) type, and has a few additional methods like `remove`.
+
+Entities are the meat of the game. They all have a position (`pos`) and a size (`size`). You can define new behavior by overriding the `update` method and implementing some kind of crazy movement, and you can implement special rendering by overriding `render`. The default rendering behavior is to render the sprite attached to the entity.
+
+The `Sprite` class represents an image with animation. It handles a bunch of annoying details like looking up a sprite in a single large image (called a sprite map), and figuring out which frame to show for animation. It has several options, like only playing the animation once, and specifying exactly which images in a sprite map compose the animation.
+
+The file [`level.js`](https://github.com/jlongster/webfighter/blob/master/www/js/level.js) adds all the entities to the scene. There is a special entity type [`Trigger`](https://github.com/jlongster/webfighter/blob/master/www/js/units.js#L615) which simply fires off an event when the player collides with it, so a bunch of triggers are added to scene. These triggers check every frame and add different kinds of enemies to the scene.
+
+Triggers are the only thing that exist outside of your viewport. When a trigger adds an enemy to the scene, it adds it right outside the right of the screen. When the enemy moves outside of the left of the screen, it is removed. Lasers and other entities are also automatically removed when they are outside the field of vision. This keeps the total number of entites down and performance up.
