@@ -143,6 +143,8 @@ define(function(require) {
             this.life--;
             this._lifeEl.textContent = this.life;
 
+            this._scene.addObject(new HitBubble(this.pos));
+
             if(this.life <= 0) {
                 this.remove();
                 this._scene.addObject(new Explosion(this.pos));
@@ -159,6 +161,40 @@ define(function(require) {
 
         collide: true,
         id: 'player'
+    });
+
+    var HitBubble = SceneObject.extend({
+        init: function(pos) {
+            this.parent(
+                pos,
+                null,
+                new Sprite('img/sprites.png',
+                           [64, 128],
+                           [43, 43])
+            );
+
+            this.started = Date.now();
+        },
+
+        update: function(dt) {
+            if(Date.now() - this.started > 1300) {
+                this.remove();
+            }
+            else {
+                var playerPos = this._scene.getObject('player').pos;
+                this.pos = vec2.createFrom(playerPos[0] - 7,
+                                           playerPos[1] - 12);
+            }
+        },
+
+        render: function(ctx) {
+            var prevAlpha = ctx.globalAlpha;
+            ctx.globalAlpha = Math.max(1 - (Date.now() - this.started) / 1300, 0);
+
+            this.parent(ctx);
+
+            ctx.globalAlpha = prevAlpha;
+        }
     });
 
     var Laser = SceneObject.extend({
