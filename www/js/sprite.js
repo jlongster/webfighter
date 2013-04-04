@@ -18,6 +18,10 @@ define(function(require) {
             this.flipHoriz = val;
         },
 
+        setOffset: function(offset) {
+            this.offset = offset;
+        },
+
         randomize: function() {
             if(this.speed > 0) {
                 this._index += Math.random() * this.frames.length * .2;
@@ -68,16 +72,18 @@ define(function(require) {
                 x += frame * this.size[0];
             }
 
-            var dest = [0, 0];
+            var dest = this.offset || [0, 0];
 
             if(this.flipHoriz) {
                 ctx.scale(-1, 1);
             }
 
+
+
             ctx.drawImage(resources.get(this.url),
                           x, y,
                           this.size[0], this.size[1],
-                          0, 0,
+                          dest[0], dest[1],
                           this.size[0], this.size[1]);
         }
     };

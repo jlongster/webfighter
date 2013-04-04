@@ -37,8 +37,6 @@ define(function(require) {
         },
 
         update: function(dt) {
-            document.querySelector('.debug').innerHTML = this.objects.length;
-
             this.camera.update(dt);
 
             // TODO: might be able to optimize this and not create a

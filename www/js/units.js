@@ -292,26 +292,31 @@ define(function(require) {
                            [172, 98])
             );
 
-            this.life = 5;
+            this.life = 50;
             this.startY = pos[1];
             this.age = 0;
         }
     });
 
     var BossWeakness = Enemy.extend({
-        points: 500,
+        points: 1000,
         
         init: function(renderer, pos, dirFunc) {
             this.parent(
                 renderer,
                 pos,
-                [42, 42],
-                new Sprite('img/sprites.png',
-                           [224, 256],
-                           [42, 42])
+                [42, 42]
             );
+
             this.dirFunc = dirFunc;
-            this.life = 100;
+            this.life = 1000;
+            this.normalSprite = new Sprite('img/sprites.png',
+                                           [224, 256],
+                                           [42, 42]);
+            this.hitSprite = new Sprite('img/sprites.png',
+                                        [224, 320],
+                                        [42, 42]);
+            this.sprite = this.normalSprite;
         },
 
         update: function(dt) {
@@ -325,6 +330,53 @@ define(function(require) {
                     [this.pos[0], this.pos[1]],
                     this.dirFunc()
                 ));
+            }
+        },
+
+        render: function(ctx) {
+            if(this.collided) {
+                this.sprite = this.hitSprite;
+            }
+
+            this.parent(ctx);
+
+            if(this.collided) {
+                this.sprite = this.normalSprite;
+                this.collided = false;
+            }
+        },
+
+        onCollide: function(obj) {
+            if(obj instanceof Laser) {
+                this.collided = true;
+            }
+        }
+    });
+
+    var BossShield = SceneObject.extend({
+        init: function(pos) {
+            this.parent(pos,
+                        [32, 98],
+                        new Sprite('img/sprites.png',
+                                   [352, 128],
+                                   [32, 194]));
+            this.sprite.setOffset([0, -50]);
+        },
+
+        onCollide: function(obj) {
+            if(obj instanceof Laser && !(obj instanceof EnemyLaser)) {
+                this.lastHit = Date.now();
+                obj.remove();
+            } 
+         },
+
+        render: function(ctx) {
+            var now = Date.now();
+            if(this.lastHit && now - this.lastHit < 700) {
+                var prevAlpha = ctx.globalAlpha;
+                ctx.globalAlpha = 1 - (now - this.lastHit) / 700;
+                this.parent(ctx);
+                ctx.globalAlpha = prevAlpha;
             }
         }
     });
@@ -614,6 +666,7 @@ define(function(require) {
         Enemy: Enemy,
         Boss: Boss,
         BossWeakness: BossWeakness,
+        BossShield: BossShield,
         CircleEnemy: CircleEnemy,
         SineEnemy: SineEnemy,
         StraightEnemy: StraightEnemy,

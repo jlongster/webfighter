@@ -120,25 +120,67 @@ define(function(require) {
     }
 
     function addBoss(renderer, scene) {
-        scene.addObject(
-            new units.Boss(renderer, [2250, 100])
-        );
+        var boss = new units.Boss(renderer, [2250, 110]);
+        var weak1 = new units.BossWeakness(renderer,
+                                           [2250, 235],
+                                           function() {
+                                               return [-100, Math.random() * -100];
+                                           });
 
-        scene.addObject(
-            new units.BossWeakness(renderer,
-                                   [2250, 250],
-                                   function() {
-                                       return [-100, Math.random() * -100];
-                                   })
-        );
+        var weak2 = new units.BossWeakness(renderer,
+                                           [2250, 50],
+                                           function() {
+                                               return [-100, Math.random() * 100];
+                                           });
 
-        scene.addObject(
-            new units.BossWeakness(renderer,
-                                   [2250, 50],
-                                   function() {
-                                       return [-100, Math.random() * 100];
-                                   })
-        );
+        scene.addObject(boss);
+        scene.addObject(weak1);
+        scene.addObject(weak2);
+        scene.addObject(new units.BossShield([2200, 110]));
+
+        scene.addObject(new units.Trigger(renderer, 1950, renderer.width + 1950, function() {
+            var totalLife = weak1.life + weak2.life;
+            var r = Math.random();
+
+            document.querySelector('.debug').innerHTML = totalLife;
+
+            if(totalLife < 1800) {
+                if(r < .03) {
+                    scene.addObject(
+                        new units.SineEnemy(renderer,
+                                            sprites.fireShip,
+                                            newPosition(scene, renderer),
+                                            [forwardShoot(1.5)])
+                    );
+                }
+            }
+
+            if(totalLife < 1000) {
+                if(r < .05) {
+                    scene.addObject(
+                        new units.SineEnemy(renderer,
+                                            sprites.saw,
+                                            newPosition(scene, renderer))
+                    );
+                }
+            }
+
+            if(totalLife <= 0) {
+                this.remove();
+                boss.remove();
+
+                for(var i=0; i<10; i++) {
+                    scene.addObject(new units.Explosion(
+                        [2250 + Math.random()*100, 
+                         110 + Math.random()* 100]
+                    ));
+                }
+
+                var player = scene.getObject('player');
+                player.gameWon = true;
+                player.remove();
+            }
+        }));
     }
 
     // components

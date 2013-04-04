@@ -18,27 +18,32 @@ define(function(require) {
         return document.getElementById(id);
     }
 
-    function getElementC(class_) {
+    function getElementQ(q) {
         return Array.prototype.slice.call(
-            document.querySelectorAll('.' + class_)
+            document.querySelectorAll(q)
         );
     }
 
     function gameOver() {
         getElement('game-over').style.display = 'block';
         getElement('game-over-overlay').style.display = 'block';
-
-        getElementC('button').forEach(function(el) {
+        getElementQ('#game-over .message')[0].textContent = 'GAME OVER!';
+        getElementQ('.button').forEach(function(el) {
             el.style.display = 'none';
         });
 
         input.disable();
     }
 
+    function gameWon() {
+        gameOver();
+        getElementQ('#game-over .message')[0].textContent = 'ENEMY DEFEATED!';
+    }
+
     function restart() {
         getElement('game-over').style.display = 'none';
         getElement('game-over-overlay').style.display = 'none';
-        getElementC('button').forEach(function(el) {
+        getElementQ('.button').forEach(function(el) {
             el.style.display = 'block';
         });
         getElement('continue').style.display = 'none';
@@ -68,7 +73,7 @@ define(function(require) {
     }
 
     function init(onlyLevel) {
-        var camera = new Camera([1900, 0]);
+        var camera = new Camera([0, 0]);
         renderer = new Renderer();
         scene = new Scene(camera);
 
@@ -103,6 +108,9 @@ define(function(require) {
 
         if(scene.getObject('player').gameOver) {
             gameOver();
+        }
+        else if(scene.getObject('player').gameWon) {
+            gameWon();
         }
 
         if(!paused) {
