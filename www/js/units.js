@@ -295,6 +295,10 @@ define(function(require) {
             this.life = 50;
             this.startY = pos[1];
             this.age = 0;
+        },
+
+        hit: function() {
+            // no life is taken away, it's invincible
         }
     });
 
@@ -356,7 +360,7 @@ define(function(require) {
     var BossShield = SceneObject.extend({
         init: function(pos) {
             this.parent(pos,
-                        [32, 98],
+                        [200, 98],
                         new Sprite('img/sprites.png',
                                    [352, 128],
                                    [32, 194]));

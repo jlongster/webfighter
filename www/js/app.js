@@ -73,7 +73,7 @@ define(function(require) {
     }
 
     function init(onlyLevel) {
-        var camera = new Camera([0, 0]);
+        var camera = new Camera([1950, 0]);
         renderer = new Renderer();
         scene = new Scene(camera);
 
@@ -103,7 +103,7 @@ define(function(require) {
         scene.update(dt);
         renderer.render(scene);
 
-        //renderer.debug(scene);
+        renderer.debug(scene);
         //renderer.debug(scene, 'Trigger');
 
         if(scene.getObject('player').gameOver) {
