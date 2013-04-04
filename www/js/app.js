@@ -36,7 +36,6 @@ define(function(require) {
                 b.requestFullScreen();
             }
             else if(b.mozRequestFullScreen) {
-                document.querySelector('.debug').innerHTML = b.mozRequestFullScreen;
                 b.mozRequestFullScreen();
             }
             else if(b.webkitRequestFullScreen()) {
@@ -105,7 +104,7 @@ define(function(require) {
     }
 
     function init(onlyLevel) {
-        var camera = new Camera([0, 0]);
+        var camera = new Camera([1950, 0]);
         renderer = new Renderer();
         scene = new Scene(camera);
 
@@ -118,7 +117,10 @@ define(function(require) {
             getElement('pause').addEventListener(clickEvent, togglePause);
             getElement('continue').addEventListener(clickEvent, togglePause);
             getElement('restart').addEventListener(clickEvent, restart);
-            getElement('fullscreen').addEventListener(clickEvent, fullscreen);
+
+            // must use the click event for fullscreen access (just a
+            // bug for now)
+            getElement('fullscreen').addEventListener('click', fullscreen);
 
             heartbeat();
         }

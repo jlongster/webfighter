@@ -448,6 +448,7 @@ define(function(require) {
         },
 
         update: function(dt) {
+            this.parent(dt);
             this.pos[0] += this.dir[0] * dt;
             this.pos[1] += this.dir[1] * dt;
         }
@@ -621,7 +622,7 @@ define(function(require) {
             sprite: new Sprite('img/sprites.png',
                                [288, 128],
                                [56, 42],
-                               12,
+                               15,
                                [0, 1, 2, 3],
                                'vertical')
         },
