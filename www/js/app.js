@@ -118,6 +118,12 @@ define(function(require) {
             getElement('continue').addEventListener(clickEvent, togglePause);
             getElement('restart').addEventListener(clickEvent, restart);
 
+            document.addEventListener('keyup', function(e) {
+                if(String.fromCharCode(e.keyCode) == 'P') {
+                    togglePause();
+                }
+            });
+
             // must use the click event for fullscreen access (just a
             // bug for now)
             getElement('fullscreen').addEventListener('click', fullscreen);
