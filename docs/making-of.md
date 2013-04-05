@@ -40,3 +40,5 @@ The `Sprite` class represents an image with animation. It handles a bunch of ann
 The file [`level.js`](https://github.com/jlongster/webfighter/blob/master/www/js/level.js) adds all the entities to the scene. There is a special entity type [`Trigger`](https://github.com/jlongster/webfighter/blob/master/www/js/units.js#L615) which simply fires off an event when the player collides with it, so a bunch of triggers are added to scene. These triggers check every frame and add different kinds of enemies to the scene.
 
 Triggers are the only thing that exist outside of your viewport. When a trigger adds an enemy to the scene, it adds it right outside the right of the screen. When the enemy moves outside of the left of the screen, it is removed. Lasers and other entities are also automatically removed when they are outside the field of vision. This keeps the total number of entites down and performance up.
+
+<img src="http://jlongster.com/s/webfighter-screen1.png" />
