@@ -41,4 +41,4 @@ The file [`level.js`](https://github.com/jlongster/webfighter/blob/master/www/js
 
 Triggers are the only thing that exist outside of your viewport. When a trigger adds an enemy to the scene, it adds it right outside the right of the screen. When the enemy moves outside of the left of the screen, it is removed. Lasers and other entities are also automatically removed when they are outside the field of vision. This keeps the total number of entites down and performance up.
 
-<img src="http://jlongster.com/s/webfighter-screen1.png" />
+![](https://raw.github.com/jlongster/webfighter/master/docs/screenshot.png)
