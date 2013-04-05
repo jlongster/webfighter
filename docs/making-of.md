@@ -5,6 +5,8 @@
 
 It works on desktop and mobile, with much thought put into the mobile experience. This article describes how webfighter works, and explains many things learned about creating games for mobile.
 
+![](https://raw.github.com/jlongster/webfighter/master/docs/screenshot.png)
+
 ## Basics
 
 Let's start with the basic architecture. This may surprise you, but webfighter does not use a game engine. I believe that there are already several examples of existing game engines out there, and this is a chance to show instead what it's like to work with only web APIs.
@@ -23,22 +25,30 @@ If you don't have any artist friends willing to help out, I would highly encoura
 
 Let's start with [app.js](https://github.com/jlongster/webfighter/blob/master/www/js/app.js). This is the first file loaded. We are using [RequireJS](http://requirejs.org/) for javascript modules, and the first part simple requires all of the necessary components.
 
-Next, you will find several functions which alter the state of the game, such as `gameOver` and `gameWon`. These stop the game and display a message to the user. Other functions like `togglePause` and `restart` have obvious purposes.
+Next you'll find several functions which trigger certain game states, like `gaveOver` and `gameWon`. The most important functions are `init`, which creates the scene and adds everything to it, and `hearbeat`, which uses [requestAnimationFrame](https://developer.mozilla.org/en-US/docs/DOM/window.requestAnimationFrame) to update and render the scene at around 60fps, or whatever is appropriate for the user.
 
-Near the end is the [`init`](https://github.com/jlongster/webfighter/blob/master/www/js/app.js#L105) function which constructs the game and starts it. This creates a camera, renderer, and scene object, and adds everything to the scene, as well adding event handlers to the UI if this is the first run.
-
-Lastly, the [`heartbeat`](https://github.com/jlongster/webfighter/blob/master/www/js/app.js#L135) function is what pumps life into our game every frame. It tells the scene to update, the renderer to render the scene, and checks to see if the game is over. An important note is that it uses [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/DOM/window.requestAnimationFrame) to [call itself](https://github.com/jlongster/webfighter/blob/master/www/js/app.js#L158) at around 60fps, or whatever is appropriate for the user's setup.
-
-## Levels & Enemies
+### Levels & Enemies
 
 The file [`units.js`](https://github.com/jlongster/webfighter/blob/master/www/js/units.js) defines every single entity in the game. An entity is an object with a `render` and `update` method. Technically the system implements this as the [`SceneObject`](https://github.com/jlongster/webfighter/blob/master/www/js/sceneobject.js) type, and has a few additional methods like `remove`.
 
-Entities are the meat of the game. They all have a position (`pos`) and a size (`size`). You can define new behavior by overriding the `update` method and implementing some kind of crazy movement, and you can implement special rendering by overriding `render`. The default rendering behavior is to render the sprite attached to the entity.
+The file [`sprite.js`](https://github.com/jlongster/webfighter/blob/master/www/js/sprite.js) defines an object which handles animations. The game works with one big sprite sheet, with references to individual sprites inside of it, and animates by rotating through several frames in the sheet. The `Sprite` class handles all of the gritty details of this. If you want more information about this, read [my blog post](https://github.com/jlongster/webfighter/blob/master/www/js/level.js).
 
-The `Sprite` class represents an image with animation. It handles a bunch of annoying details like looking up a sprite in a single large image (called a sprite map), and figuring out which frame to show for animation. It has several options, like only playing the animation once, and specifying exactly which images in a sprite map compose the animation.
+[`level.js`](https://github.com/jlongster/webfighter/blob/master/www/js/level.js) pulls it all together and adds everything to the scene. It uses an entity type called `Trigger` which triggers when to add certain enemies to scene, and adds the background and other structural components of the game.
 
-The file [`level.js`](https://github.com/jlongster/webfighter/blob/master/www/js/level.js) adds all the entities to the scene. There is a special entity type [`Trigger`](https://github.com/jlongster/webfighter/blob/master/www/js/units.js#L615) which simply fires off an event when the player collides with it, so a bunch of triggers are added to scene. These triggers check every frame and add different kinds of enemies to the scene.
+### The Renderer and Scene Manager
 
-Triggers are the only thing that exist outside of your viewport. When a trigger adds an enemy to the scene, it adds it right outside the right of the screen. When the enemy moves outside of the left of the screen, it is removed. Lasers and other entities are also automatically removed when they are outside the field of vision. This keeps the total number of entites down and performance up.
+There are two core components which drive the whole game: the renderer and the scene manager. The renderer, defined in [`renderer.js`](https://github.com/jlongster/webfighter/blob/master/www/js/renderer.js), takes a scene and renders all the objects in it. It also handles changes in the window size and optimizes the viewport. The scene manager, defined in [`scene.js`](https://github.com/jlongster/webfighter/blob/master/www/js/scene.js) allows you to add/remove objects to a scene, and handles collision detection.
 
-![](https://raw.github.com/jlongster/webfighter/master/docs/screenshot.png)
+Both of these objects are relatively simple, around 115 lines of code on average, and are a simple example of how to create games with relatively little code.
+
+Back in `init` in app.js, we [create a scene and renderer](https://github.com/jlongster/webfighter/blob/master/www/js/app.js#L106). The main game loop, `heartbeat`, updates the scene with `scene.update(dt)` and renders with with `renderer.render(scene)`. This happens continuously, creating the fluid gameplay experience.
+
+### Input and Resources
+
+The last two pieces are input and resource management. The input library, defined in [`input.js`](https://github.com/jlongster/webfighter/blob/master/www/js/input.js), is a state-based manager that provides simple functions like `isDown` to check to key presses. Since we already have a game loop, it's simpler to check for key presses when the scene is updating rather than using the native events.
+
+The resource library in [`resources.js`](https://github.com/jlongster/webfighter/blob/master/www/js/resources.js) provides a handy API for loading images and firing off events when all the images are loaded. You can see how we use it [at the bottom of `app.js`](https://github.com/jlongster/webfighter/blob/master/www/js/app.js#L162).
+
+## Mobile Considerations
+
+Hello
