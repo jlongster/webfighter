@@ -75,4 +75,4 @@ This worked out well, and I've been able to beat the game on a few different dev
 
 ## Conclusion
 
-I hope you enjoy webfighter and are inspired to make some games for mobile, especially Firefox OS! Look for webfighter the Firefox Marketplace near you, and feel free to file any issues here on github if you have questions.
+I hope you enjoy webfighter and are inspired to make some games for mobile, especially Firefox OS! Look for webfighter in the Firefox Marketplace near you, and feel free to file any issues here on github if you have questions.
