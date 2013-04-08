@@ -51,4 +51,28 @@ The resource library in [`resources.js`](https://github.com/jlongster/webfighter
 
 ## Mobile Considerations
 
-Hello
+While webfighter works on the dekstop, it is optimized for a mobile experience. This is visible in the UI, with the bar at the top with large buttons for switching to fullscreen, restarting, and pausing. I learned a few things about developing games for mobile throughout this.
+
+### Handling Various Screen Sizes
+
+One of the more difficult things to figure out was how to fit the canvas with various screen sizes. Ideally, you want the proportion of the canvas to stay the same. Otherwise longer screens have an advantage because they can see more of the game at one time. It also needs to somehow scale up to desktop sizes, and we obviously can't make the canvas bigger because the player has the same advantage as longer screens.
+
+One option is to keep the actual game width and height fixed, but scale the canvas to fit the screen. The problem with this is that pixel graphics with sharp edges do not scale well. They can only scale by a factor of 2, otherwise they look bad or blurry.
+
+Here's what I ended up doing: if the screen size is larger than a certain threshold, I hardcode the the game to the dimensions 480x320. If the screen is big enough, I zoom in by a factor of 2. The the screen size is lower than a certain threshold, I set the width and height to 100%.
+
+This gives larger screens an advantage, as mentioned before, but it's a simple way to handle scaling. The advantage is small because it's only the difference between phone screen sizes. Once it gets large enough it is capped to 480x320.
+
+You can see the logic [here](https://github.com/jlongster/webfighter/blob/master/www/js/renderer.js#L33). There's probably better ways to do this, but this works for now.
+
+### Touch Input
+
+Another difficulty with mobile is input. Touch screens are really neat for some games, but it's difficult to map a directional pad (d-pad) to a touch screen, and you thumbs end up covering part of the game.
+
+There are two controls needed for webfighter, a d-pad to move the ship around and a fire button. The way it works is the screen is divided in half, and if the user touches the left side they can move there finger to move the ship around, relative to the initial touch point. The right side, if touched, fires a bullet.
+
+This worked out well, and I've been able to beat the game on a few different devices I used. You can see the [d-pad functionality](https://github.com/jlongster/webfighter/blob/master/www/js/input.js#L70) in the input library as well as the [fire button](https://github.com/jlongster/webfighter/blob/master/www/js/input.js#L133).
+
+## Conclusion
+
+I hope you enjoy webfighter and are inspired to make some games for mobile, especially Firefox OS! Look for webfighter the Firefox Marketplace near you, and feel free to file any issues here on github if you have questions.
