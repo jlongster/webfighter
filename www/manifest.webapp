@@ -12,5 +12,5 @@
     "name": "James Long & James Socol",
     "url": "http://jlongster.com"
   },
-  "installs_allowed_from": ["*"],
+  "installs_allowed_from": ["*"]
 }
