@@ -32,12 +32,30 @@ canvas {
     right: 0;
 }
 
-#game-over-overlay, #game-over {
+#game-over-overlay, #game-over, #start-screen {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     display: none;
+}
+
+#start-screen {
+    background: url('../img/background.png');
+    background-size: 100% 100%;
+    display: block;
+    height: 100%;
+    color: white
+}
+
+#start-screen h1 {
+    text-align: center;
+    font-size: 4em;
+    margin-top: 2em;
+    font-style: italic;
+}
+
+#start-screen button {
 }
 
 #game-over-overlay {
@@ -62,6 +80,7 @@ canvas {
     position: absolute;
     top: 0;
     left: 0;
+    display: none;
     background-color: rgba(0, 0, 0, .5);
     width: 100%;
     z-index: 10;

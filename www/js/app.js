@@ -2,6 +2,7 @@ define(function(require) {
     require('./install-button');
     require('./math');
 
+    var payments = require('./payments');
     var resources = require('./resources');
     var input = require('./input');
     var level = require('./level');
@@ -116,6 +117,7 @@ define(function(require) {
             getElement('pause').addEventListener(clickEvent, togglePause);
             getElement('continue').addEventListener(clickEvent, togglePause);
             getElement('restart').addEventListener(clickEvent, restart);
+            getElement('buy').addEventListener(clickEvent, payments.buy);
 
             document.addEventListener('keyup', function(e) {
                 if(String.fromCharCode(e.keyCode) == 'P') {
@@ -126,8 +128,6 @@ define(function(require) {
             // must use the click event for fullscreen access (just a
             // bug for now)
             getElement('fullscreen').addEventListener('click', fullscreen);
-
-            heartbeat();
         }
     }
 
@@ -166,4 +166,8 @@ define(function(require) {
         'img/background3.png'
     ]);
     resources.onReady(init);
+
+    return {
+        start: heartbeat
+    };
 });
