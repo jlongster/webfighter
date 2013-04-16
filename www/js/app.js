@@ -11,7 +11,7 @@ define(function(require) {
     var Scene = require('./scene');
     var Camera = require('./camera');
 
-    var renderer, scene, paused = false;
+    var renderer, scene, paused = true;
     var clickEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
 
     function getElement(id) {
@@ -59,7 +59,7 @@ define(function(require) {
         getElement('game-over').style.display = 'block';
         getElement('game-over-overlay').style.display = 'block';
         getElementQ('#game-over .message')[0].textContent = 'GAME OVER!';
-        getElementQ('.button').forEach(function(el) {
+        getElementQ('#appbar .button').forEach(function(el) {
             el.style.display = 'none';
         });
 
@@ -79,14 +79,34 @@ define(function(require) {
         });
         getElement('continue').style.display = 'none';
 
-        if(paused) {
-            togglePause();
-        }
-
         input.enable();
         init(true);
+        paused = true;
+        togglePause();
     }
 
+    function gameScreen() {
+        getElement('start-screen').style.display = 'none';
+        getElement('appbar').style.display = 'block';
+        getElement('controls').style.display = 'block';
+
+        restart();
+    }
+
+    function mainScreen() {
+        getElement('start-screen').style.display = 'block';
+        getElement('appbar').style.display = 'none';
+        getElement('controls').style.display = 'none';
+        getElement('store-screen').style.display = 'none';
+        getElement('game-over').style.display = 'none';
+        getElement('game-over-overlay').style.display = 'none';
+    }
+
+    function scoreScreen() {
+        getElement('store-screen').style.display = 'block';
+        getElement('start-screen').style.display = 'none';
+    }
+    
     function togglePause() {
         if(paused) {
             paused = false;
@@ -112,8 +132,30 @@ define(function(require) {
 
         if(!onlyLevel) {
             input.init();
+            input.disable();
+
+            // start screen
+
+            getElement('play').addEventListener(clickEvent, function() {
+                gameScreen();
+            });
+
+            getElement('store').addEventListener(clickEvent, function() {
+                scoreScreen();
+            });
+
+            // score screen
+
+            // in-game
 
             getElement('play-again').addEventListener(clickEvent, restart);
+            getElement('back-title').addEventListener(clickEvent, function() {
+                if(!paused) {
+                    togglePause();
+                }
+
+                mainScreen();
+            });
             getElement('pause').addEventListener(clickEvent, togglePause);
             getElement('continue').addEventListener(clickEvent, togglePause);
             getElement('restart').addEventListener(clickEvent, restart);
@@ -133,6 +175,10 @@ define(function(require) {
 
     var lastTime;
     function heartbeat() {
+        if(paused) {
+            return;
+        }
+
         if(!lastTime) {
             lastTime = Date.now();
         }
@@ -153,10 +199,8 @@ define(function(require) {
             gameWon();
         }
 
-        if(!paused) {
-            lastTime = now;
-            requestAnimFrame(heartbeat);
-        }
+        lastTime = now;
+        requestAnimFrame(heartbeat);
     }
 
     resources.load([

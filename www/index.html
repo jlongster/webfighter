@@ -20,9 +20,19 @@
       <canvas id="canvas"></canvas>
 
       <div id="start-screen">
-        <h1>Webfighter</h1>
+        <div class="title">
+          <img src="/img/logo-ship.png" />
+          <h1>Webfighter</h1>
+        </div>
 
-        <button>Play</button>
+        <div class="buttons">
+          <button id="play">Play</button>
+          <button id="store">Store</button>
+        </div>
+      </div>
+
+      <div id="store-screen">
+        <button class="button" id="buy">Buy</button>
       </div>
 
       <div id="game-over-overlay">
@@ -31,6 +41,7 @@
       <div id="game-over">
         <h1 class="message"></h1>
         <button id="play-again">Play Again</button>
+        <button id="back-title">Back to Title</button>
       </div>
 
       <div id="appbar">
@@ -38,14 +49,15 @@
         <img class="button" id="continue" src="img/play.png" />
         <img class="button" id="restart" src="img/restart.png" />
         <img class="button" id="fullscreen" src="img/fullscreen.png" />
-        <button class="button" id="buy">Buy</button>
         <div class="score">Score: <span></span></div>
         <div class="life">Life: <span></span></div>
       </div>
 
-      <div class="input dpad"></div>
-      <div class="input fire"></div>
-      <div class="debug"></div>
+      <div id="controls">
+        <div class="input dpad"></div>
+        <div class="input fire"></div>
+        <div class="debug"></div>
+      </div>
     </div>
 
     <!-- Using require.js, a module system for javascript, include the
