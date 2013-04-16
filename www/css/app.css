@@ -96,12 +96,66 @@ canvas {
     padding: .5em 0;
     width: 10em;
     font-family: sans-serif;
-    background-color: #f0f0f0;
+    background-color: black;
+    color: white;
     border: .1em solid #d0d0d0;
 }
 
 #store-screen {
     display: none;
+    overflow: auto;
+}
+
+#store-screen .item {
+    margin: 1.5em auto;
+    padding: 2em 0;
+    background-color: rgba(0, 0, 0, .4);
+    width: 60%;
+}
+
+.small #store-screen img {
+    width: 50%;
+}
+
+#store-screen .content, #store-screen .purchase {
+    display: inline-block;
+    vertical-align: top;
+}
+
+#store-screen button.back {
+    font-size: 1.5em;
+    border: 1px solid #d0d0d0;
+    border-radius: .5em;
+    background-color: black;
+    color: white;
+    padding: .25em 1em;
+}
+
+#store-screen button.back:nth-of-type(2n-1) {
+    margin-top: 1.5em;
+}
+
+#store-screen button.back:nth-of-type(2n) {
+    margin-bottom: 1.5em;
+}
+
+#store-screen .purchase {
+    padding-top: 3em;
+    margin-left: 1em;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-size: 1.5em;
+    text-align: center;
+    width: 5em;
+    color: #ccffdd;
+}
+
+#store-screen .purchase button {
+    margin-top: .5em;
+    font-size: .8em;
+    border: 1px solid #d0d0d0;
+    padding: .25em 1em;
 }
 
 #game-over-overlay {

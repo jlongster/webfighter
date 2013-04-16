@@ -144,7 +144,11 @@ define(function(require) {
                 scoreScreen();
             });
 
-            // score screen
+            // store screen
+
+            getElementQ('#store-screen button.back').forEach(function(el) {
+                el.addEventListener(clickEvent, mainScreen);
+            });
 
             // in-game
 
