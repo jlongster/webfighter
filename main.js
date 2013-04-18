@@ -54,9 +54,9 @@ socketServer.on('connection', function(socket) {
         switch(msg.name) {
         case 'sign-jwt':
             var jwt = pay.request({
-                id: 'red-ship',
-                name: 'webfighter',
-                description: 'a fighter game',
+                id: msg.item,
+                name: msg.item,
+                description: msg.description,
                 pricePoint: 1,
                 productData: socket.id,
                 postbackURL: 'http://jlongster.com:7890/mozpay/postback',

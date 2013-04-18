@@ -1,8 +1,8 @@
 define(function(require) {
 
-    //var server = 'ws:' + window.location.href.substring(window.location.protocol.length);
-    var server = 'ws://localhost:4000';
+    var server = 'ws:' + window.location.href.substring(window.location.protocol.length);
     var socket = new WebSocket(server);
+    var clickEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
 
     socket.onmessage = function(msg) {
         msg = JSON.parse(msg.data);
@@ -35,10 +35,15 @@ define(function(require) {
         }
     };
 
-    function buy() {
-        socket.send(JSON.stringify({
-            name: 'sign-jwt'
-        }));
+    function buy(name) {
+        // GAH need to put items object on the server-side because it
+        // needs to access the price of it there
+
+        // socket.send(JSON.stringify({
+        //     name: 'sign-jwt',
+        //     item: name,
+        //     description: items[name].description
+        // }));
     }
 
     function formatPrice(point) {
@@ -53,7 +58,7 @@ define(function(require) {
             '</div>' +
             '<div class="purchase">' +
             formatPrice(data.price) +
-            '<div><button>Buy</button></div>' +
+            '<div><button data-item="' + data.name + '">Buy</button></div>' +
             '</div>';
     }
 
@@ -65,9 +70,15 @@ define(function(require) {
             div.className = 'item';
             div.innerHTML = templatize(items[name]);
             el.appendChild(div);
-
-            
         }
+
+        Array.prototype.slice.call(
+            document.querySelectorAll('#store-screen .items button')
+        ).forEach(function(btn) {
+            btn.addEventListener(clickEvent, function() {
+                buy(this.dataset.item);
+            });
+        });
     }
 
     return {
