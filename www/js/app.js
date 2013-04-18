@@ -2,7 +2,7 @@ define(function(require) {
     require('./install-button');
     require('./math');
 
-    var payments = require('./payments');
+    var store = require('./store');
     var resources = require('./resources');
     var input = require('./input');
     var level = require('./level');
@@ -150,6 +150,8 @@ define(function(require) {
                 el.addEventListener(clickEvent, mainScreen);
             });
 
+            store.populate();
+
             // in-game
 
             getElement('play-again').addEventListener(clickEvent, restart);
@@ -163,7 +165,6 @@ define(function(require) {
             getElement('pause').addEventListener(clickEvent, togglePause);
             getElement('continue').addEventListener(clickEvent, togglePause);
             getElement('restart').addEventListener(clickEvent, restart);
-            getElement('buy').addEventListener(clickEvent, payments.buy);
 
             document.addEventListener('keyup', function(e) {
                 if(String.fromCharCode(e.keyCode) == 'P') {

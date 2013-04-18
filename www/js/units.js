@@ -16,25 +16,12 @@ define(function(require) {
             this.weapons = [];
             this.life = 3;
 
-            this.sprites = {
-                'default': new Sprite('img/sprites.png',
-                                      [0, 192 + 23 * 2],
-                                      [27, 23]),
-                'up': new Sprite('img/sprites.png',
-                                 [0, 192],
-                                 [27, 23]),
-                'down': new Sprite('img/sprites.png',
-                                 [0, 192 + 23 * 4],
-                                 [27, 23])
-            };
-
             this._lifeEl.textContent = this.life;
-            this.sprite = this.sprites['default'];
         },
 
         update: function(dt) {
             var camera = this._scene.camera;
-            this.sprite = this.sprites['default'];
+            this.sprite = sprites.playerShip1.sprite;
 
             // Move with the screen.
             if(camera.pos[0] < 1950) {
@@ -43,7 +30,7 @@ define(function(require) {
 
             if(input.isDown('w') || input.isDown('UP')) {
                 this.pos[1] -= 250 * dt;
-                this.sprite = this.sprites['up'];
+                this.sprite = sprites.playerShip1Up.sprite;
             }
 
             if(input.isDown('a') || input.isDown('LEFT')) {
@@ -52,7 +39,7 @@ define(function(require) {
 
             if(input.isDown('s') || input.isDown('DOWN')) {
                 this.pos[1] += 250 * dt;
-                this.sprite = this.sprites['down'];
+                this.sprite = sprites.playerShip1Down.sprite;
             }
 
             if(input.isDown('d') || input.isDown('RIGHT')) {
@@ -78,13 +65,13 @@ define(function(require) {
             var scene = this._scene;
 
             var front = [
-                this.pos[0] + this.size[0],
-                this.pos[1] + this.size[1] / 2 - sprites.laser.sprite.size[1] / 2
+                this.pos[0] + this.sprite.size[0],
+                this.pos[1] + this.sprite.size[1] / 2 - sprites.laser.sprite.size[1] / 2
             ];
 
             var center = [
-                this.pos[0] + this.size[0] / 2 - sprites.laser.sprite.size[1] / 2,
-                this.pos[1] + this.size[1] / 2
+                this.pos[0] + this.sprite.size[0] / 2 - sprites.laser.sprite.size[1] / 2,
+                this.pos[1] + this.sprite.size[1] / 2
             ];
 
             if(Date.now() - this.lastShot > 100) {
@@ -636,6 +623,48 @@ define(function(require) {
     // sprites
 
     var sprites = {
+        'playerShip1': {
+            bounds: [],
+            sprite: new Sprite('img/sprites.png',
+                               [0, 192 + 23 * 2],
+                               [27, 19])
+        },
+
+        'playerShip1Up': {
+            bounds: [],
+            sprite: new Sprite('img/sprites.png',
+                               [0, 192],
+                               [27, 19])
+        },
+
+        'playerShip1Down': {
+            bounds: [],
+            sprite: new Sprite('img/sprites.png',
+                               [0, 192 + 23 * 4],
+                               [27, 19])
+        },
+
+        'playerShip2': {
+            bounds: [],
+            sprite: new Sprite('img/sprites.png',
+                               [0, 320 + 24 * 2],
+                               [30, 13])
+        },
+
+        'playerShip2Up': {
+            bounds: [],
+            sprite: new Sprite('img/sprites.png',
+                               [0, 320],
+                               [30, 13])
+        },
+
+        'playerShip2Down': {
+            bounds: [],
+            sprite: new Sprite('img/sprites.png',
+                               [0, 320 + 24 * 4],
+                               [30, 13])
+        },
+
         fireShip: {
             bounds: [24, 21],
             sprite: new Sprite('img/sprites.png',
