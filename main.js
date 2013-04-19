@@ -2,6 +2,7 @@ var http = require('http');
 var express = require('express');
 var WebSocketServer = require('ws').Server;
 var pay = require('mozpay');
+var store = require('./store');
 
 pay.configure({
     mozPayKey: '8e65b214-2370-461e-929b-7ed32403fd53',
@@ -18,62 +19,58 @@ pay.configure({
 });
 
 var app = express();
-var server = http.createServer(app);
-var socketServer = new WebSocketServer({ server: server });
 
 app.configure(function() {
     app.use(express.static(__dirname + '/www'));
     app.use(express.bodyParser());
 });
 
+app.get('/store-items', function(req, res) {
+    res.send(JSON.stringify(store));
+});
+
+app.post('/sign-jwt', function(req, res) {
+    var name = req.body.name;
+    console.log('purchasing ' + name);
+
+    if(store[name]) {
+        var item = store[name];
+        var token = 'FOO';
+
+        var jwt = pay.request({
+            id: item.name,
+            name: item.name,
+            description: item.description,
+            pricePoint: 1,
+            productData: token,
+            postbackURL: 'http://jlongster.com:7890/mozpay/postback',
+            chargebackURL: 'http://jlongster.com:7890/mozpay/chargeback',
+            simulate: { 'result': 'postback' }
+        });
+
+        purchaseQueue[token] = 'processing';
+        res.send(JSON.stringify(jwt));
+    }
+    else {
+        res.send(500, { error: 'bad product' });
+    }
+});
+
+app.get('/purchaseQueue', function(req, res) {
+    var token = req.query['token'];
+    res.send(purchaseQueue['token'] || 'notfound');
+});
+
+var purchaseQueue = [];
 pay.on('postback', function(data) {
     var req = data.request;
-    var socket = sockets[req.productData];
-
-    socket.send(JSON.stringify({
-        name: 'purchased',
-        productId: req.id
-    }));
+    purchaseQueue[req.productData] = 'success';
 });
 
 pay.on('chargeback', function(data) {
-
-});
-
-var sockets = [];
-
-socketServer.on('connection', function(socket) {
-    console.log('connected');
-    socket.id = sockets.length;
-    sockets.push(socket);
-
-    socket.on('message', function(msg) {
-        msg = JSON.parse(msg);
-        console.log(msg);
-
-        switch(msg.name) {
-        case 'sign-jwt':
-            var jwt = pay.request({
-                id: msg.item,
-                name: msg.item,
-                description: msg.description,
-                pricePoint: 1,
-                productData: socket.id,
-                postbackURL: 'http://jlongster.com:7890/mozpay/postback',
-                chargebackURL: 'http://jlongster.com:7890/mozpay/chargeback',
-                simulate: { 'result': 'postback' }
-            });
-            
-            socket.send(JSON.stringify({
-                name: 'signed-jwt',
-                jwt: jwt
-            }));
-
-            break;
-        default:
-        }
-    });
+    var req = data.request;
+    purchaseQueue[req.productData] = 'failure';    
 });
 
 pay.routes(app);
-server.listen(4000);
+app.listen(4000);

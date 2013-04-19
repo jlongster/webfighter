@@ -1,49 +1,27 @@
 define(function(require) {
 
-    var server = 'ws:' + window.location.href.substring(window.location.protocol.length);
-    var socket = new WebSocket(server);
     var clickEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
 
-    socket.onmessage = function(msg) {
-        msg = JSON.parse(msg.data);
+    function ajax() {
 
-        switch(msg.name) {
-        case 'signed-jwt':
+    }
+
+    function buy(name) {
+        post('/sign-jwt', name, function(res) {
             if(navigator.mozPay) {
-                var req = navigator.mozPay([msg.jwt]);
+                var req = navigator.mozPay([res]);
+
                 console.log(msg.jwt);
                 req.onerror = function() {
                     console.log('mozPay error: ' + this.error.name);
                 };
+
+                // poll to see when res is done
             }
             else {
                 alert('in-app payments unavailable');
             }
-
-            break;
-        case 'purchased':
-            alert('purchased ' + msg.productId);
-        default:
-        }
-    };
-
-    var items = {
-        'Carrot Ship': {
-            icon: 'img/items/carrot-ship.png',
-            description: 'This carrot ship. yes.',
-            price: '1'
-        }
-    };
-
-    function buy(name) {
-        // GAH need to put items object on the server-side because it
-        // needs to access the price of it there
-
-        // socket.send(JSON.stringify({
-        //     name: 'sign-jwt',
-        //     item: name,
-        //     description: items[name].description
-        // }));
+        });
     }
 
     function formatPrice(point) {
