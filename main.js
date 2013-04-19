@@ -35,7 +35,7 @@ app.post('/sign-jwt', function(req, res) {
 
     if(store[name]) {
         var item = store[name];
-        var token = 'FOO';
+        var token = 'o' + Math.floor(Math.random() * 1000000);
 
         var jwt = pay.request({
             id: name,
@@ -43,8 +43,8 @@ app.post('/sign-jwt', function(req, res) {
             description: item.description,
             pricePoint: 1,
             productData: token,
-            postbackURL: 'http://jlongster.com:7890/mozpay/postback',
-            chargebackURL: 'http://jlongster.com:7890/mozpay/chargeback',
+            postbackURL: 'http://webfighter.jlongster.com/mozpay/postback',
+            chargebackURL: 'http://webfighter.jlongster.com/mozpay/chargeback',
             simulate: { 'result': 'postback' }
         });
 
