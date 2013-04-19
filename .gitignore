@@ -44,3 +44,4 @@ build/config/buildinfo.properties
 www-built
 www-ghdeploy
 .#*
+settings.js

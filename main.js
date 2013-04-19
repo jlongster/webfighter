@@ -3,6 +3,7 @@ var express = require('express');
 var WebSocketServer = require('ws').Server;
 var pay = require('mozpay');
 var store = require('./store');
+var settings = require('./settings');
 
 pay.configure({
     mozPayKey: '8e65b214-2370-461e-929b-7ed32403fd53',
@@ -81,4 +82,4 @@ pay.on('chargeback', function(data) {
 });
 
 pay.routes(app);
-app.listen(4000);
+app.listen(settings.port);
