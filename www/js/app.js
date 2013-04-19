@@ -2,6 +2,7 @@ define(function(require) {
     require('./install-button');
     require('./math');
 
+    var clickEvent = require('./util').clickEvent;
     var store = require('./store');
     var resources = require('./resources');
     var input = require('./input');
@@ -10,9 +11,10 @@ define(function(require) {
     var Renderer = require('./renderer');
     var Scene = require('./scene');
     var Camera = require('./camera');
+    var Player = require('./units').Player;
 
     var renderer, scene, paused = true;
-    var clickEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
+
 
     function getElement(id) {
         return document.getElementById(id);
@@ -129,6 +131,14 @@ define(function(require) {
         scene = new Scene(camera);
 
         level.init(scene, renderer);
+
+        var ship = 'playerShip1';
+        if(store.isPurchased('Carrot Ship')) {
+            ship = 'playerShip2';
+        }
+
+        var player = new Player(renderer, [50, 50], ship);
+        scene.addObject(player);
 
         if(!onlyLevel) {
             input.init();

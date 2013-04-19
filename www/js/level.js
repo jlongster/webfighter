@@ -24,9 +24,6 @@ define(function(require) {
         scene.addObject(new units.Floor(renderer, 'img/background2.png'));
         scene.addObject(new units.Floor(renderer, 'img/background3.png'));
         level1(scene, renderer);
-
-        var player = new units.Player(renderer, [50, 50]);
-        scene.addObject(player);
     }
 
     function level1(scene, renderer) {

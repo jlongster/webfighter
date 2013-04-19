@@ -31,15 +31,14 @@ app.get('/store-items', function(req, res) {
 
 app.post('/sign-jwt', function(req, res) {
     var name = req.body.name;
-    console.log('purchasing ' + name);
 
     if(store[name]) {
         var item = store[name];
         var token = 'FOO';
 
         var jwt = pay.request({
-            id: item.name,
-            name: item.name,
+            id: name,
+            name: name,
             description: item.description,
             pricePoint: 1,
             productData: token,
@@ -49,7 +48,10 @@ app.post('/sign-jwt', function(req, res) {
         });
 
         purchaseQueue[token] = 'processing';
-        res.send(JSON.stringify(jwt));
+        res.send(JSON.stringify({
+            jwt: jwt,
+            token: token
+        }));
     }
     else {
         res.send(500, { error: 'bad product' });
@@ -58,7 +60,13 @@ app.post('/sign-jwt', function(req, res) {
 
 app.get('/purchaseQueue', function(req, res) {
     var token = req.query['token'];
-    res.send(purchaseQueue['token'] || 'notfound');
+    var status = purchaseQueue[token];
+
+    if(status) {
+        delete purchaseQueue[token];
+    }
+
+    res.send(status || 'notfound');
 });
 
 var purchaseQueue = [];

@@ -6,7 +6,7 @@ define(function(require) {
     var resources = require('./resources');
 
     var Player = SceneObject.extend({
-        init: function(renderer, pos) {
+        init: function(renderer, pos, spriteName) {
             this.parent(pos, [27, 19]);
             this._renderer = renderer;
             this.lastShot = 0;
@@ -15,13 +15,14 @@ define(function(require) {
             this._lifeEl = document.querySelector('.life span');
             this.weapons = [];
             this.life = 3;
+            this.spriteName = spriteName;
 
             this._lifeEl.textContent = this.life;
         },
 
         update: function(dt) {
             var camera = this._scene.camera;
-            this.sprite = sprites.playerShip1.sprite;
+            this.sprite = sprites[this.spriteName].sprite;
 
             // Move with the screen.
             if(camera.pos[0] < 1950) {
@@ -30,7 +31,7 @@ define(function(require) {
 
             if(input.isDown('w') || input.isDown('UP')) {
                 this.pos[1] -= 250 * dt;
-                this.sprite = sprites.playerShip1Up.sprite;
+                this.sprite = sprites[this.spriteName + 'Up'].sprite;
             }
 
             if(input.isDown('a') || input.isDown('LEFT')) {
@@ -39,7 +40,7 @@ define(function(require) {
 
             if(input.isDown('s') || input.isDown('DOWN')) {
                 this.pos[1] += 250 * dt;
-                this.sprite = sprites.playerShip1Down.sprite;
+                this.sprite = sprites[this.spriteName + 'Down'].sprite;
             }
 
             if(input.isDown('d') || input.isDown('RIGHT')) {
