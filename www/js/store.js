@@ -46,6 +46,10 @@ define(function(require) {
         el.innerHTML = 'purchased';
     }
 
+    function isBuiltin(name) {
+        return ['Fighter'].indexOf(name) !== -1;
+    }
+
     function isPurchased(name) {
         return purchasedItems.indexOf(name) !== -1;
     }
@@ -66,29 +70,42 @@ define(function(require) {
             '</div>' +
             '<div class="purchase">';
 
-        if(isPurchased(data.name)) {
-            str += 'purchased';
-        }
-        else {
-            str += formatPrice(data.price) +
-                '<div><button data-item="' + data.name + '">Buy</button></div>';
+        if(!isBuiltin(data.name)) {
+            if(isPurchased(data.name)) {
+                str += 'purchased';
+            }
+            else {
+                str += formatPrice(data.price) +
+                    '<div><button data-item="' + data.name + '">Buy</button></div>';
+            }
         }
 
         return str + '</div>';
+    }
+
+    function populateCategory(type, items) {
+        var el = document.querySelector('#store-screen .' + type);
+
+        for(var name in items[type]) {
+            var item = items[type][name];
+            item.name = name;
+
+            var div = document.createElement('div');
+            div.className = 'item ' + itemClass(name);
+            div.innerHTML = templatize(item);
+            el.appendChild(div);
+        }
     }
 
     function populate() {
         ajax('GET', '/store-items', function(res) {
             var items = JSON.parse(res);
 
-            for(var name in items) {
-                items[name].name = name;
-                var el = document.querySelector('#store-screen .items');
-                var div = document.createElement('div');
-                div.className = 'item ' + itemClass(name);
-                div.innerHTML = templatize(items[name]);
-                el.appendChild(div);
-            }
+            // populate the stores with individual items, hook up the
+            // buttons, and figure out the UI for "selecting" items
+            populateCategory('ships', items);
+            populateCategory('weapons', items);
+            populateCategory('additions', items);
 
             Array.prototype.slice.call(
                 document.querySelectorAll('#store-screen .items button')
