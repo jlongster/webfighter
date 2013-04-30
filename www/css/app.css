@@ -110,7 +110,25 @@ canvas {
     margin: 1.5em auto;
     padding: 2em 0;
     background-color: rgba(0, 0, 0, .4);
+    border-radius: 20px;
     width: 60%;
+}
+
+#store-screen .item .selected-text {
+    position: relative;
+    top: -1.5em;
+    text-transform: uppercase;
+    font-size: .75em;
+    color: green;
+    display: none;
+}
+
+#store-screen .item.selected {
+    box-shadow: 0 0 30px white;
+}
+
+#store-screen .item.selected .selected-text {
+    display: block;
 }
 
 .small #store-screen img {

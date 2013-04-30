@@ -133,7 +133,7 @@ define(function(require) {
         level.init(scene, renderer);
 
         var ship = 'playerShip1';
-        if(store.isPurchased('Carrot Ship')) {
+        if(store.isSelected('Carrot Ship', 'ships')) {
             ship = 'playerShip2';
         }
 

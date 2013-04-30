@@ -4,7 +4,30 @@ define(function(require) {
     var ajax = util.ajax;
 
     var purchasedItems = JSON.parse(localStorage.getItem('purchased') || '[]');
+    var selectedItems = JSON.parse(localStorage.getItem('selected') || 'null') || {
+        ships: 'Fighter',
+        weapons: [],
+        additions: []
+    };
     purchasedItems = [];
+
+    // util
+
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) == '[object Array]';
+    }
+
+    function addClass(el, cls) {
+        if(el.className.indexOf(cls) === -1) {
+            el.className += ' ' + cls;
+        }
+    }
+
+    function removeClass(el, cls) {
+        el.className = el.className.replace(cls, '');
+    }
+
+    // store
 
     function pollQueue(token, name) {
         ajax('GET', '/purchaseQueue?token=' + token, function(res) {
@@ -18,8 +41,9 @@ define(function(require) {
         });
     }
 
-    function buy(name) {
-        ajax('POST', '/sign-jwt', { name: name }, function(res) {
+    function buy(name, type) {
+        ajax('POST', '/sign-jwt', { name: name,
+                                    type: type }, function(res) {
             if(navigator.mozPay) {
                 res = JSON.parse(res);
 
@@ -54,6 +78,14 @@ define(function(require) {
         return purchasedItems.indexOf(name) !== -1;
     }
 
+    function isSelected(name, type) {
+        var item = selectedItems[type];
+        if(isArray(item)) {
+            return item.indexOf(name) !== -1;
+        }
+        return item == name;
+    }
+
     function formatPrice(point) {
         return '$' + (point - .01).toFixed(2);
     }
@@ -62,10 +94,42 @@ define(function(require) {
         return name.replace(/[ !']/g, '-');
     }
 
-    function templatize(data) {
+    function selectItem(name, type) {
+        var item = selectedItems[type];
+        if(isArray(item)) {
+            var el = document.querySelector('.item.' + name);
+            
+            if(item.indexOf(name) === -1) {
+                item.push(name);
+                el.className += ' selected';
+            }
+            else {
+                item.splice(item.indexOf(name), 1);
+                removeClass(el, 'selected');
+            }
+        }
+        else {
+            Array.prototype.slice.call(
+                document.querySelectorAll('.' + type + ' .item')
+            ).forEach(function(el) {
+                if(el.dataset.name == name) {
+                    addClass(el, 'selected');
+                }
+                else {
+                    removeClass(el, 'selected');
+                }
+            });
+
+            selectedItems[type] = name;
+        }
+    }
+
+    // need to style the store much better
+    function templatize(data, type) {
         var str = '<div class="content">' +
             '<img src="' + data.icon + '" />' +
             '<h2>' + data.name + '</h2>' +
+            '<div class="selected-text">selected</div>' +
             '<div class="desc">' + data.description + '</div>' +
             '</div>' +
             '<div class="purchase">';
@@ -76,8 +140,11 @@ define(function(require) {
             }
             else {
                 str += formatPrice(data.price) +
-                    '<div><button data-item="' + data.name + '">Buy</button></div>';
+                    '<div><button data-type="' + type + '" data-item="' + data.name + '">Buy</button></div>';
             }
+        }
+        else {
+            str += 'free';
         }
 
         return str + '</div>';
@@ -92,7 +159,14 @@ define(function(require) {
 
             var div = document.createElement('div');
             div.className = 'item ' + itemClass(name);
-            div.innerHTML = templatize(item);
+            div.dataset.type = type;
+            div.dataset.name = name;
+
+            if(isSelected(name, type)) {
+                div.className = div.className += ' selected';
+            }
+
+            div.innerHTML = templatize(item, type);
             el.appendChild(div);
         }
     }
@@ -111,14 +185,29 @@ define(function(require) {
                 document.querySelectorAll('#store-screen .items button')
             ).forEach(function(btn) {
                 btn.addEventListener(clickEvent, function() {
-                    buy(this.dataset.item);
+                    buy(this.dataset.item, this.dataset.type);
                 });
             });
+
+            Array.prototype.slice.call(
+                document.querySelectorAll('#store-screen .item')
+            ).forEach(function(el) {
+                el.addEventListener(clickEvent, function() {
+                    if(isBuiltin(this.dataset.name) || isPurchased(this.dataset.name)) {
+                        selectItem(this.dataset.name, this.dataset.type);
+                    }
+                    else {
+                        alert('need to purchase');
+                    }
+                });
+            });
+
         });
     }
 
     return {
         populate: populate,
-        isPurchased: isPurchased
+        isPurchased: isPurchased,
+        isSelected: isSelected
     };
 });

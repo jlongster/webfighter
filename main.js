@@ -1,6 +1,5 @@
 var http = require('http');
 var express = require('express');
-var WebSocketServer = require('ws').Server;
 var pay = require('mozpay');
 var store = require('./store');
 var settings = require('./settings');
@@ -32,9 +31,10 @@ app.get('/store-items', function(req, res) {
 
 app.post('/sign-jwt', function(req, res) {
     var name = req.body.name;
+    var type = req.body.type;
 
-    if(store[name]) {
-        var item = store[name];
+    if(store[type][name]) {
+        var item = store[type][name];
         var token = 'o' + Math.floor(Math.random() * 1000000);
 
         var jwt = pay.request({
@@ -43,8 +43,8 @@ app.post('/sign-jwt', function(req, res) {
             description: item.description,
             pricePoint: 1,
             productData: token,
-            postbackURL: 'http://webfighter.jlongster.com/mozpay/postback',
-            chargebackURL: 'http://webfighter.jlongster.com/mozpay/chargeback',
+            postbackURL: settings.url + '/mozpay/postback',
+            chargebackURL: settings.url + '/mozpay/chargeback',
             simulate: { 'result': 'postback' }
         });
 
@@ -63,7 +63,7 @@ app.get('/purchaseQueue', function(req, res) {
     var token = req.query['token'];
     var status = purchaseQueue[token];
 
-    if(status) {
+    if(status != 'processing') {
         delete purchaseQueue[token];
     }
 

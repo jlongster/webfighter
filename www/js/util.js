@@ -16,11 +16,11 @@ define(function(require) {
         };
 
         if(params) {
-            var str = '';
+            var arr = [];
             for(var k in params) {
-                str += k + '=' + encodeURIComponent(params[k]);
+                arr.push(k + '=' + encodeURIComponent(params[k]));
             }
-            params = str;
+            params = arr.join('&');
         }
 
         ajax.open(method, url, true);
