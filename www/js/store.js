@@ -184,7 +184,8 @@ define(function(require) {
             Array.prototype.slice.call(
                 document.querySelectorAll('#store-screen .items button')
             ).forEach(function(btn) {
-                btn.addEventListener(clickEvent, function() {
+                btn.addEventListener(clickEvent, function(e) {
+                    e.stopPropagation();
                     buy(this.dataset.item, this.dataset.type);
                 });
             });
