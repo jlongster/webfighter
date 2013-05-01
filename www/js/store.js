@@ -126,12 +126,8 @@ define(function(require) {
 
     // need to style the store much better
     function templatize(data, type) {
-        var str = '<div class="content">' +
-            '<img src="' + data.icon + '" />' +
-            '<h2>' + data.name + '</h2>' +
-            '<div class="selected-text">selected</div>' +
-            '<div class="desc">' + data.description + '</div>' +
-            '</div>' +
+        var str = '<div class="img"><img src="' + data.icon + '" /></div>' +
+            '<div class="info"><h4>' + data.name + '</h4>' + data.description + '</div>' +
             '<div class="purchase">';
 
         if(!isBuiltin(data.name)) {
@@ -139,12 +135,12 @@ define(function(require) {
                 str += 'purchased';
             }
             else {
-                str += formatPrice(data.price) +
+                str += '<div class="price">' + formatPrice(data.price) + '</div>' +
                     '<div><button data-type="' + type + '" data-item="' + data.name + '">Buy</button></div>';
             }
         }
         else {
-            str += 'free';
+            str += '<div class="price">free</div>';
         }
 
         return str + '</div>';
@@ -159,8 +155,6 @@ define(function(require) {
 
             var div = document.createElement('div');
             div.className = 'item ' + itemClass(name);
-            div.dataset.type = type;
-            div.dataset.name = name;
 
             if(isSelected(name, type)) {
                 div.className = div.className += ' selected';
