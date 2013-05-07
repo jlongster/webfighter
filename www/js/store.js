@@ -119,6 +119,8 @@ define(function(require) {
 
             selectedItems[type] = name;
         }
+
+        localStorage.setItem('selected', JSON.stringify(selectedItems));
     }
 
     // need to style the store much better

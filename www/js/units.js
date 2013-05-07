@@ -14,8 +14,12 @@ define(function(require) {
             this._scoreEl = document.querySelector('.score span');
             this._lifeEl = document.querySelector('.life span');
             this.weapons = [];
-            this.life = 3;
             this.spriteName = spriteName;
+
+            this.life = 3;
+            if(this.spriteName == 'playerShip3') {
+                this.life = 4;
+            }
 
             this._lifeEl.textContent = this.life;
         },
@@ -76,9 +80,26 @@ define(function(require) {
             ];
 
             if(Date.now() - this.lastShot > 100) {
-                scene.addObject(
-                    new Laser(this._renderer, vec2.create(front), [1, 0], 1000)
-                );
+                if(this.spriteName == 'playerShip4') {
+                    scene.addObject(
+                        new Laser(this._renderer,
+                                  vec2.createFrom(this.pos[0] + this.sprite.size[0],
+                                                  this.pos[1]),
+                                  [1, 0], 1000)
+                    );
+
+                    scene.addObject(
+                        new Laser(this._renderer,
+                                  vec2.createFrom(this.pos[0] + this.sprite.size[0],
+                                                  this.pos[1] + this.sprite.size[1] - sprites.laser.sprite.size[1]),
+                                  [1, 0], 1000)
+                    );
+                }
+                else {
+                    scene.addObject(
+                        new Laser(this._renderer, vec2.create(front), [1, 0], 1000)
+                    );
+                }
 
                 for(var i=0; i<this.weapons.length; i++) {
                     var w = this.weapons[i];
@@ -664,6 +685,48 @@ define(function(require) {
             sprite: new Sprite('img/sprites.png',
                                [0, 320 + 24 * 4],
                                [30, 13])
+        },
+
+        'playerShip3': {
+            bounds: [],
+            sprite: new Sprite('img/sprites.png',
+                               [32, 384 + 23 * 2],
+                               [25, 23])
+        },
+
+        'playerShip3Up': {
+            bounds: [],
+            sprite: new Sprite('img/sprites.png',
+                               [32, 384],
+                               [25, 17])
+        },
+
+        'playerShip3Down': {
+            bounds: [],
+            sprite: new Sprite('img/sprites.png',
+                               [32, 384 + 23 * 4],
+                               [25, 17])
+        },
+
+        'playerShip4': {
+            bounds: [],
+            sprite: new Sprite('img/sprites.png',
+                               [64, 384 + 17 * 2],
+                               [19, 17])
+        },
+
+        'playerShip4Up': {
+            bounds: [],
+            sprite: new Sprite('img/sprites.png',
+                               [64, 384],
+                               [19, 17])
+        },
+
+        'playerShip4Down': {
+            bounds: [],
+            sprite: new Sprite('img/sprites.png',
+                               [64, 384 + 17 * 4],
+                               [19, 17])
         },
 
         fireShip: {

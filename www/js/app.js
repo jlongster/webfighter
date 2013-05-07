@@ -129,6 +129,12 @@ define(function(require) {
         if(store.isSelected('Carrot Ship', 'ships')) {
             ship = 'playerShip2';
         }
+        else if(store.isSelected('Blaster', 'ships')) {
+            ship = 'playerShip3';
+        }
+        else if(store.isSelected('Duel Fighter', 'ships')) {
+            ship = 'playerShip4';
+        }
 
         var player = new Player(renderer, [50, 50], ship);
         scene.addObject(player);
