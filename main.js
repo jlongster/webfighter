@@ -63,6 +63,8 @@ app.get('/purchaseQueue', function(req, res) {
     var token = req.query['token'];
     var status = purchaseQueue[token];
 
+    console.log(status);
+
     if(status != 'processing') {
         delete purchaseQueue[token];
     }
@@ -78,7 +80,8 @@ pay.on('postback', function(data) {
 
 pay.on('chargeback', function(data) {
     var req = data.request;
-    purchaseQueue[req.productData] = 'failure';    
+    console.log(req);
+    purchaseQueue[req.productData] = 'failure';
 });
 
 pay.routes(app);

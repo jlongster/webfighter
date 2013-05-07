@@ -126,35 +126,59 @@ canvas {
 }
 
 #store-screen .item {
-    float: left;
+    width: 80%;
     overflow: hidden;
-    width: 28%;
-    height: 23em;
-    margin: 0 2em;
+    margin: 2em auto;
     border: 3px solid #222222;
+    position: relative;
+
     border-radius: 3px;
-    padding: 1.5em 0;
+    padding: 1.5em;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 #store-screen .item.selected {
     border: 3px solid #2244ff;
 }
 
-#store-screen .info h4 {
+#store-screen h4 {
     margin: 0;
     margin-bottom: .5em;
-}
-
-.small #store-screen .item .info {
-    font-size: 1em;
-}
-
-.small #store-screen .item .price {
     font-size: 2em;
 }
 
-#store-screen .info {
-    font-size: 1.25em;
+#store-screen .item button {
+    font-size: 1em;
+    margin: 1em 0;
+}
+
+#store-screen .item .purchased {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-style: italic;
+    margin: .75em;
+    color: pink;
+}
+
+.small #store-screen .item {
+    width: auto;
+    margin: 2em;
+}
+
+.small #store-screen .item button {
+    font-size: 2em;
+}
+
+.small #store-screen .item .desc {
+    font-size: 2em;
+}
+
+.small #store-screen .item .purchased {
+    font-size: 1.75em;
 }
 
 #store-screen .price {
@@ -176,7 +200,6 @@ canvas {
 #store-screen button.back {
     margin-bottom: 1.5em;
 }
-
 
 #game-over-overlay {
     height: 100%;

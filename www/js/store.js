@@ -9,7 +9,6 @@ define(function(require) {
         weapons: [],
         additions: []
     };
-    purchasedItems = [];
 
     // util
 
@@ -29,16 +28,28 @@ define(function(require) {
 
     // store
 
+    var pollTimer = null;
+
     function pollQueue(token, name) {
         ajax('GET', '/purchaseQueue?token=' + token, function(res) {
             switch(res) {
-            case 'success': onPurchase(name); break;
-            case 'failure': alert('payment failure'); break;
-            default:
-                setTimeout(function() { pollQueue(token, name); }, 1000);
+            case 'success':
+                onPurchase(name); 
+                clearPolling();
+                break;
+            case 'failure':
+                alert('payment failure');
+                clearPolling();
                 break;
             }
         });
+    }
+
+    function clearPolling() {
+        if(pollTimer) {
+            clearInterval(pollTimer);
+        }
+        pollTimer = null;
     }
 
     function buy(name, type) {
@@ -51,10 +62,11 @@ define(function(require) {
 
                 req.onerror = function() {
                     console.log('mozPay error: ' + this.error.name);
+                    clearPolling();
                 };
 
                 // poll to see when res is done
-                pollQueue(res.token, name);
+                pollTimer = setInterval(function() { pollQueue(res.token, name); }, 1000);
             }
             else {
                 alert('in-app payments unavailable');
@@ -67,7 +79,7 @@ define(function(require) {
         localStorage.setItem('purchased', JSON.stringify(purchasedItems));
 
         var el = document.querySelector('.' + itemClass(name) + ' .purchase');
-        el.innerHTML = 'purchased';
+        el.innerHTML = '<div class="purchased">purchased</div>';
     }
 
     function isBuiltin(name) {
@@ -126,24 +138,26 @@ define(function(require) {
 
     // need to style the store much better
     function templatize(data, type) {
-        var str = '<div class="img"><img src="' + data.icon + '" /></div>' +
-            '<div class="info"><h4>' + data.name + '</h4>' + data.description + '</div>' +
-            '<div class="purchase">';
+        var str = '';
+
+        str += '<img src="' + data.icon + '" />' +
+            '<h4>' + data.name + '</h4>' +
+            '<div class="desc">' + data.description + '</div>';
+
 
         if(!isBuiltin(data.name)) {
+            str += '<div class="purchase">';
+
             if(isPurchased(data.name)) {
-                str += 'purchased';
+                str += '<div class="purchased">purchased</div>';
             }
             else {
-                str += '<div class="price">' + formatPrice(data.price) + '</div>' +
-                    '<div><button data-type="' + type + '" data-item="' + data.name + '">Buy</button></div>';
+                str += '<button data-type="' + type + '" data-item="' + data.name + '">Buy for ' + formatPrice(data.price) + '</button>';
             }
-        }
-        else {
-            str += '<div class="price">free</div>';
+            str += '</div>';
         }
 
-        return str + '</div>';
+        return str;
     }
 
     function populateCategory(type, items) {
@@ -155,6 +169,8 @@ define(function(require) {
 
             var div = document.createElement('div');
             div.className = 'item ' + itemClass(name);
+            div.dataset.name = name;
+            div.dataset.type = type;
 
             if(isSelected(name, type)) {
                 div.className = div.className += ' selected';
@@ -190,9 +206,6 @@ define(function(require) {
                 el.addEventListener(clickEvent, function() {
                     if(isBuiltin(this.dataset.name) || isPurchased(this.dataset.name)) {
                         selectItem(this.dataset.name, this.dataset.type);
-                    }
-                    else {
-                        alert('need to purchase');
                     }
                 });
             });
