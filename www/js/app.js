@@ -139,6 +139,14 @@ define(function(require) {
         var player = new Player(renderer, [50, 50], ship);
         scene.addObject(player);
 
+        if(store.isSelected('Reverse Plasma', 'weapons')) {
+            player.weapons.push('plasma');
+        }
+
+        if(store.isSelected('Flying Hotdog', 'weapons')) {
+            player.weapons.push('hotdog');
+        }
+
         if(!onlyLevel) {
             input.init();
             input.disable();

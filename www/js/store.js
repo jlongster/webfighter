@@ -96,15 +96,15 @@ define(function(require) {
     function selectItem(name, type) {
         var item = selectedItems[type];
         if(util.isArray(item)) {
-            var el = document.querySelector('.item.' + name);
+            var el = document.querySelector('.item.' + itemClass(name));
             
             if(item.indexOf(name) === -1) {
                 item.push(name);
-                el.className += ' selected';
+                util.addClass(el, 'selected');
             }
             else {
                 item.splice(item.indexOf(name), 1);
-                removeClass(el, 'selected');
+                util.removeClass(el, 'selected');
             }
         }
         else {
@@ -176,7 +176,6 @@ define(function(require) {
             // buttons, and figure out the UI for "selecting" items
             populateCategory('ships', items);
             populateCategory('weapons', items);
-            populateCategory('additions', items);
 
             util.getElements('#store-screen .items button').forEach(function(btn) {
                 btn.addEventListener(clickEvent, function(e) {

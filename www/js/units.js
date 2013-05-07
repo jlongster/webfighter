@@ -142,6 +142,39 @@ define(function(require) {
                             )
                         );
                     }
+                    else if(w == 'plasma') {
+                        scene.addObject(
+                            new Laser(
+                                this._renderer,
+                                vec2.createFrom(center[0] - sprites.plasma.sprite.size[0] - 10,
+                                                center[1] - sprites.plasma.sprite.size[1] / 2),
+                                [-1, 0],
+                                1000,
+                                sprites.plasma
+                            )
+                        );
+                    }
+                    else if(w == 'hotdog' && Math.random() < .4) {
+                        scene.addObject(
+                            new Laser(
+                                this._renderer,
+                                vec2.create(front),
+                                [1, -1],
+                                1000,
+                                sprites.hotdog
+                            )
+                        );
+
+                        scene.addObject(
+                            new Laser(
+                                this._renderer,
+                                vec2.create(front),
+                                [1, 1],
+                                1000,
+                                sprites.hotdogFlipped
+                            )
+                        );
+                    }
                 }
 
                 this.lastShot = Date.now();
@@ -790,6 +823,24 @@ define(function(require) {
             sprite: new Sprite('img/sprites.png',
                                [32, 41],
                                [14, 9])
+        },
+        plasma: {
+            bounds: [43, 11],
+            sprite: new Sprite('img/sprites.png',
+                               [96, 384],
+                               [43, 11])
+        },
+        hotdog: {
+            bounds: [14, 12],
+            sprite: new Sprite('img/sprites.png',
+                               [96, 416],
+                               [14, 12])
+        },
+        hotdogFlipped: {
+            bounds: [14, 12],
+            sprite: new Sprite('img/sprites.png',
+                               [96, 428],
+                               [14, 12])
         }
     };
 

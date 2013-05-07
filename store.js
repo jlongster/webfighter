@@ -24,9 +24,15 @@ module.exports = {
     },
 
     'weapons': {
-        'Plasma': {
-            'icon': 'img/items/carrot-ship.png',
-            'description': 'Blast away!',
+        'Reverse Plasma': {
+            'icon': 'img/items/plasma.png',
+            'description': 'Send a deadly plasma beam to those trying to sneak up behind you.',
+            'price': '1'
+        },
+
+        'Flying Hotdog': {
+            'icon': 'img/items/hotdog.png',
+            'description': 'Call for additional aid from the hotdogs!',
             'price': '1'
         }
     }
