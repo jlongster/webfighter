@@ -33,8 +33,37 @@ define(function(require) {
         ajax.send(params);
     }
 
+    function getElement(id) {
+        return document.getElementById(id);
+    }
+
+    function getElements(q) {
+        return Array.prototype.slice.call(
+            document.querySelectorAll(q)
+        );
+    }
+
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) == '[object Array]';
+    }
+
+    function addClass(el, cls) {
+        if(el.className.indexOf(cls) === -1) {
+            el.className += ' ' + cls;
+        }
+    }
+
+    function removeClass(el, cls) {
+        el.className = el.className.replace(cls, '');
+    }
+
     return {
         clickEvent: clickEvent,
-        ajax: ajax
+        ajax: ajax,
+        getElement: getElement,
+        getElements: getElements,
+        isArray: isArray,
+        addClass: addClass,
+        removeClass: removeClass
     };
 });

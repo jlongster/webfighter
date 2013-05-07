@@ -10,22 +10,6 @@ define(function(require) {
         additions: []
     };
 
-    // util
-
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) == '[object Array]';
-    }
-
-    function addClass(el, cls) {
-        if(el.className.indexOf(cls) === -1) {
-            el.className += ' ' + cls;
-        }
-    }
-
-    function removeClass(el, cls) {
-        el.className = el.className.replace(cls, '');
-    }
-
     // store
 
     var pollTimer = null;
@@ -41,6 +25,9 @@ define(function(require) {
                 alert('payment failure');
                 clearPolling();
                 break;
+            default:
+                // let the timer continue to poll until 'success' or
+                // 'failure' is returned
             }
         });
     }
@@ -92,7 +79,7 @@ define(function(require) {
 
     function isSelected(name, type) {
         var item = selectedItems[type];
-        if(isArray(item)) {
+        if(util.isArray(item)) {
             return item.indexOf(name) !== -1;
         }
         return item == name;
@@ -108,7 +95,7 @@ define(function(require) {
 
     function selectItem(name, type) {
         var item = selectedItems[type];
-        if(isArray(item)) {
+        if(util.isArray(item)) {
             var el = document.querySelector('.item.' + name);
             
             if(item.indexOf(name) === -1) {
@@ -121,14 +108,12 @@ define(function(require) {
             }
         }
         else {
-            Array.prototype.slice.call(
-                document.querySelectorAll('.' + type + ' .item')
-            ).forEach(function(el) {
+            util.getElements('.' + type + ' .item').forEach(function(el) {
                 if(el.dataset.name == name) {
-                    addClass(el, 'selected');
+                    util.addClass(el, 'selected');
                 }
                 else {
-                    removeClass(el, 'selected');
+                    util.removeClass(el, 'selected');
                 }
             });
 
@@ -191,18 +176,14 @@ define(function(require) {
             populateCategory('weapons', items);
             populateCategory('additions', items);
 
-            Array.prototype.slice.call(
-                document.querySelectorAll('#store-screen .items button')
-            ).forEach(function(btn) {
+            util.getElements('#store-screen .items button').forEach(function(btn) {
                 btn.addEventListener(clickEvent, function(e) {
                     e.stopPropagation();
                     buy(this.dataset.item, this.dataset.type);
                 });
             });
 
-            Array.prototype.slice.call(
-                document.querySelectorAll('#store-screen .item')
-            ).forEach(function(el) {
+            util.getElements('#store-screen .item').forEach(function(el) {
                 el.addEventListener(clickEvent, function() {
                     if(isBuiltin(this.dataset.name) || isPurchased(this.dataset.name)) {
                         selectItem(this.dataset.name, this.dataset.type);

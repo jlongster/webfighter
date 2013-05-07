@@ -1,8 +1,11 @@
 define(function(require) {
-    require('./install-button');
     require('./math');
 
-    var clickEvent = require('./util').clickEvent;
+    var util = require('./util');
+    var clickEvent = util.clickEvent;
+    var getElement = util.getElement;
+    var getElements = util.getElements;
+
     var store = require('./store');
     var resources = require('./resources');
     var input = require('./input');
@@ -15,16 +18,6 @@ define(function(require) {
 
     var renderer, scene, paused = true;
 
-
-    function getElement(id) {
-        return document.getElementById(id);
-    }
-
-    function getElementQ(q) {
-        return Array.prototype.slice.call(
-            document.querySelectorAll(q)
-        );
-    }
 
     function fullscreen() {
         var d = document;
@@ -60,8 +53,8 @@ define(function(require) {
     function gameOver() {
         getElement('game-over').style.display = 'block';
         getElement('game-over-overlay').style.display = 'block';
-        getElementQ('#game-over .message')[0].textContent = 'GAME OVER!';
-        getElementQ('#appbar .button').forEach(function(el) {
+        getElements('#game-over .message')[0].textContent = 'GAME OVER!';
+        getElements('#appbar .button').forEach(function(el) {
             el.style.display = 'none';
         });
 
@@ -70,13 +63,13 @@ define(function(require) {
 
     function gameWon() {
         gameOver();
-        getElementQ('#game-over .message')[0].textContent = 'ENEMY DEFEATED!';
+        getElements('#game-over .message')[0].textContent = 'ENEMY DEFEATED!';
     }
 
     function restart() {
         getElement('game-over').style.display = 'none';
         getElement('game-over-overlay').style.display = 'none';
-        getElementQ('.button').forEach(function(el) {
+        getElements('.button').forEach(function(el) {
             el.style.display = 'block';
         });
         getElement('continue').style.display = 'none';
@@ -156,7 +149,7 @@ define(function(require) {
 
             // store screen
 
-            getElementQ('#store-screen button.back').forEach(function(el) {
+            getElements('#store-screen button.back').forEach(function(el) {
                 el.addEventListener(clickEvent, mainScreen);
             });
 
