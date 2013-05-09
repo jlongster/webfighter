@@ -33,24 +33,29 @@ define(function(require) {
         optimizeSize: function(canvas, wrapper) {
             // Optimized for mobile
             if(window.innerWidth <= 600 && window.innerHeight <= 600) {
-                this.width = canvas.width = window.innerWidth;
-                this.height = canvas.height = window.innerHeight;
+                var barHeight = document.getElementById('appbar').clientHeight;
+                canvas.style.marginTop = barHeight + 'px';
 
-                wrapper.style.width = this.width + 'px';
-                wrapper.style.height = this.height + 'px';
+                this.width = canvas.width = window.innerWidth;
+                this.height = canvas.height = window.innerHeight - barHeight;
+
+                wrapper.style.width = window.innerWidth + 'px';
+                wrapper.style.height = window.innerHeight + 'px';
 
                 document.body.className = 'small';
             }
             else {
-                var aspect = window.innerWidth / window.innerHeight;
-
-                this.width = canvas.width = 480;
-                this.height = canvas.height = 320;
-
                 var zoomFactor = Math.min(Math.floor(window.innerWidth / 480) || 1,
                                           Math.floor(window.innerHeight / 320) || 1);
-                wrapper.style.width = (this.width * zoomFactor) + 'px';
-                wrapper.style.height = (this.height * zoomFactor) + 'px';
+
+                wrapper.style.width = (480 * zoomFactor) + 'px';
+                wrapper.style.height = (320 * zoomFactor) + 'px';
+
+                var barHeight = document.getElementById('appbar').clientHeight;
+                canvas.style.marginTop = barHeight + 'px';
+
+                this.width = canvas.width = 480;
+                this.height = canvas.height = 320 - (barHeight / zoomFactor);
 
                 if(zoomFactor == 1) {
                     document.body.className = 'small';

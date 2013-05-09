@@ -56,7 +56,8 @@ define(function(require) {
                 pollTimer = setInterval(function() { pollQueue(res.token, name); }, 1000);
             }
             else {
-                alert('in-app payments unavailable');
+                alert('in-app payments unavailable, so giving it to you for free');
+                onPurchase(name);
             }
         });
     }

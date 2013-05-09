@@ -57,8 +57,8 @@ define(function(require) {
 
             // Bounds-check position.
             var camX = this._scene.camera.pos[0];
-            var maxX = this._renderer.width + camX - this.size[0];
-            var maxY = this._renderer.height - this.size[1];
+            var maxX = this._renderer.canvas.width + camX - this.size[0];
+            var maxY = this._renderer.canvas.height - this.size[1];
             this.pos[0] = bound(this.pos[0], camX, maxX);
             this.pos[1] = bound(this.pos[1], 0, maxY);
 
