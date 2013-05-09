@@ -4,7 +4,6 @@
   "description": "An r-type and Tyrian inspired shooter game",
   "launch_path": "/index.html",
   "icons": {
-    "16": "/img/icons/16.png",
     "30": "/img/icons/30.png",
     "32": "/img/icons/32.png",
     "60": "/img/icons/60.png",
