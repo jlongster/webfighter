@@ -4,9 +4,14 @@ var pay = require('mozpay');
 var store = require('./store');
 var settings = require('./settings');
 
+// This uses the mozpay node module to set up the server-side payment
+// handling for us: https://github.com/mozilla/mozpay-js
+//
+// You can generate payment keys for your app here:
+// https://marketplace.firefox.com/developers/in-app-keys/
 pay.configure({
-    mozPayKey: '8e65b214-2370-461e-929b-7ed32403fd53',
-    mozPaySecret: 'b3cf30622452594edbb66f8398586fcd8b8f7de3a0d96e837f262a93bd4d60c29b5b8ba485ec0be00365bc4812e63438',
+    mozPayKey: settings.payKey,
+    mozPaySecret: settings.paySecret,
     mozPayAudience: 'marketplace.firefox.com',
 
     // This is an optional prefix to your postback/chargeback URLs.
