@@ -15,6 +15,9 @@ define(function(require) {
     var pollTimer = null;
 
     function pollQueue(token, name) {
+        // Poll the server every second to see the status of our
+        // payment request
+
         ajax('GET', '/purchaseQueue?token=' + token, function(res) {
             switch(res) {
             case 'success':
@@ -40,6 +43,8 @@ define(function(require) {
     }
 
     function buy(name, type) {
+        // Purchase an item by requesting a JWT object from the
+        // server, and posting it to the mozPay API
         ajax('POST', '/sign-jwt', { name: name,
                                     type: type }, function(res) {
             if(navigator.mozPay) {
@@ -52,7 +57,7 @@ define(function(require) {
                     clearPolling();
                 };
 
-                // poll to see when res is done
+                // Poll to see when the payment is complete
                 pollTimer = setInterval(function() { pollQueue(res.token, name); }, 1000);
             }
             else {
@@ -63,6 +68,7 @@ define(function(require) {
     }
 
     function onPurchase(name) {
+        // The purchase was successful, so update the user's inventory
         purchasedItems.push(name);
         localStorage.setItem('purchased', JSON.stringify(purchasedItems));
 
@@ -85,6 +91,8 @@ define(function(require) {
         }
         return item == name;
     }
+
+    // The rest of this code implements the UI of the store
 
     function formatPrice(point) {
         return '$' + (point - .01).toFixed(2);

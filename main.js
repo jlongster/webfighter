@@ -31,10 +31,15 @@ app.configure(function() {
 });
 
 app.get('/store-items', function(req, res) {
+    // Send the JSON blob containing all the information about the
+    // available items to the client, to be displayed to the user
     res.send(JSON.stringify(store));
 });
 
 app.post('/sign-jwt', function(req, res) {
+    // The client code calls this to get a signed JWT object
+    // representing a purchase of a specific item
+
     var name = req.body.name;
     var type = req.body.type;
 
@@ -42,6 +47,7 @@ app.post('/sign-jwt', function(req, res) {
         var item = store[type][name];
         var token = 'o' + Math.floor(Math.random() * 1000000);
 
+        // Use the mozpay modue to create the JWT object
         var jwt = pay.request({
             id: name,
             name: name,
@@ -53,7 +59,10 @@ app.post('/sign-jwt', function(req, res) {
             simulate: { 'result': 'postback' }
         });
 
+        // Keep track of which JWT objects we are waiting on
         purchaseQueue[token] = 'processing';
+
+        // Send it back to the client which will be posted to the mozPay API
         res.send(JSON.stringify({
             jwt: jwt,
             token: token
@@ -65,10 +74,12 @@ app.post('/sign-jwt', function(req, res) {
 });
 
 app.get('/purchaseQueue', function(req, res) {
+    // This is called every second by the client when it is waiting
+    // for a payment response. When we hear back from the payment
+    // server, the purchase is marked "success" (or "failure")
+
     var token = req.query['token'];
     var status = purchaseQueue[token];
-
-    console.log(status);
 
     if(status != 'processing') {
         delete purchaseQueue[token];
@@ -76,6 +87,9 @@ app.get('/purchaseQueue', function(req, res) {
 
     res.send(status || 'notfound');
 });
+
+// These two events hook into the mozpay module and are fired when we
+// hear back from the external payment server
 
 var purchaseQueue = [];
 pay.on('postback', function(data) {
