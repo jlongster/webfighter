@@ -19,6 +19,7 @@ define(function(require) {
 
             this.ctx = canvas.getContext('2d');
             this.canvas = canvas;
+            this.sizeWrapper = sizeWrapper;
             this.resizeFuncs = [];
             this.optimizeSize(canvas, sizeWrapper);
 
@@ -66,6 +67,11 @@ define(function(require) {
             }
 
             this.fireResize();
+        },
+
+        reset: function() {
+            this.resizeFuncs = [];
+            this.optimizeSize(this.canvas, this.sizeWrapper);
         },
 
         onResize: function(func) {

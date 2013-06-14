@@ -42,7 +42,7 @@ define(function(require) {
                 this.pos[0] -= 250 * dt;
             }
 
-            if(input.isDown('s') || input.isDown('DOWN')) {
+           if(input.isDown('s') || input.isDown('DOWN')) {
                 this.pos[1] += 250 * dt;
                 this.sprite = sprites[this.spriteName + 'Down'].sprite;
             }
@@ -661,6 +661,8 @@ define(function(require) {
             this.parent([startX, 0],
                         [endX - startX, renderer.height]);
             this.func = func;
+
+            this._id = Math.random() * 1000 | 0;
 
             var _this = this;
             renderer.onResize(function(w, h) {

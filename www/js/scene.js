@@ -12,6 +12,8 @@ define(function(require) {
             this.objectsById = {};
             this.camera = camera;
             this.addedObjects = [];
+
+            this._id = Math.random() * 100 | 0;
         },
 
         addObject: function(obj) {

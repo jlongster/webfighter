@@ -163,7 +163,7 @@ define(function(require) {
 
                 for(var i=0; i<10; i++) {
                     scene.addObject(new units.Explosion(
-                        [2250 + Math.random()*100, 
+                        [2250 + Math.random()*100,
                          110 + Math.random()* 100]
                     ));
                 }

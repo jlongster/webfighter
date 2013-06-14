@@ -18,7 +18,6 @@ define(function(require) {
 
     var renderer, scene, paused = true;
 
-
     function fullscreen() {
         var d = document;
         var b = d.body;
@@ -46,7 +45,7 @@ define(function(require) {
             }
             else if(d.webkitCancelFullScreen) {
                 d.webkitCancelFullScreen();
-            }            
+            }
         }
     }
 
@@ -75,55 +74,16 @@ define(function(require) {
         getElement('continue').style.display = 'none';
 
         input.enable();
-        init(true);
-        paused = true;
-        togglePause();
-    }
 
-    function gameScreen() {
-        getElement('start-screen').style.display = 'none';
-        getElement('appbar').style.display = 'block';
-        getElement('controls').style.display = 'block';
+        // create the scene objects
 
-        restart();
-    }
-
-    function mainScreen() {
-        getElement('start-screen').style.display = 'block';
-        getElement('appbar').style.display = 'none';
-        getElement('controls').style.display = 'none';
-        getElement('store-screen').style.display = 'none';
-        getElement('game-over').style.display = 'none';
-        getElement('game-over-overlay').style.display = 'none';
-    }
-
-    function scoreScreen() {
-        getElement('store-screen').style.display = 'block';
-        getElement('start-screen').style.display = 'none';
-    }
-    
-    function togglePause() {
-        if(paused) {
-            paused = false;
-            getElement('continue').style.display = 'none';
-            getElement('pause').style.display = 'block';
-
-            lastTime = Date.now();
-            requestAnimFrame(heartbeat);
-        }
-        else {
-            paused = true;
-            getElement('pause').style.display = 'none';
-            getElement('continue').style.display = 'block';
-        }
-    }
-
-    function init(onlyLevel) {
         var camera = new Camera([0, 0]);
-        renderer = new Renderer();
         scene = new Scene(camera);
+        renderer.reset();
 
         level.init(scene, renderer);
+
+        // create the player
 
         var ship = 'playerShip1';
         if(store.isSelected('Carrot Ship', 'ships')) {
@@ -147,52 +107,103 @@ define(function(require) {
             player.weapons.push('hotdog');
         }
 
-        if(!onlyLevel) {
-            input.init();
-            input.disable();
+        // reset the time and start the game if it's not already
+        // running
 
-            // start screen
-
-            getElement('play').addEventListener(clickEvent, function() {
-                gameScreen();
-            });
-
-            getElement('store').addEventListener(clickEvent, function() {
-                scoreScreen();
-            });
-
-            // store screen
-
-            getElements('#store-screen button.back').forEach(function(el) {
-                el.addEventListener(clickEvent, mainScreen);
-            });
-
-            store.populate();
-
-            // in-game
-
-            getElement('play-again').addEventListener(clickEvent, restart);
-            getElement('back-title').addEventListener(clickEvent, function() {
-                if(!paused) {
-                    togglePause();
-                }
-
-                mainScreen();
-            });
-            getElement('pause').addEventListener(clickEvent, togglePause);
-            getElement('continue').addEventListener(clickEvent, togglePause);
-            getElement('restart').addEventListener(clickEvent, restart);
-
-            document.addEventListener('keyup', function(e) {
-                if(String.fromCharCode(e.keyCode) == 'P') {
-                    togglePause();
-                }
-            });
-
-            // must use the click event for fullscreen access (just a
-            // bug for now)
-            getElement('fullscreen').addEventListener('click', fullscreen);
+        lastTime = Date.now();
+        if(paused) {
+            paused = false;
+            requestAnimFrame(heartbeat);
         }
+    }
+
+    function gameScreen() {
+        getElement('start-screen').style.display = 'none';
+        getElement('appbar').style.display = 'block';
+        getElement('controls').style.display = 'block';
+
+        restart();
+    }
+
+    function mainScreen() {
+        getElement('start-screen').style.display = 'block';
+        getElement('appbar').style.display = 'none';
+        getElement('controls').style.display = 'none';
+        getElement('store-screen').style.display = 'none';
+        getElement('game-over').style.display = 'none';
+        getElement('game-over-overlay').style.display = 'none';
+
+        paused = true;
+    }
+
+    function scoreScreen() {
+        getElement('store-screen').style.display = 'block';
+        getElement('start-screen').style.display = 'none';
+    }
+
+    function togglePause() {
+        if(paused) {
+            paused = false;
+            getElement('continue').style.display = 'none';
+            getElement('pause').style.display = 'block';
+
+            lastTime = Date.now();
+            requestAnimFrame(heartbeat);
+        }
+        else {
+            paused = true;
+            getElement('pause').style.display = 'none';
+            getElement('continue').style.display = 'block';
+        }
+    }
+
+    function init() {
+        renderer = new Renderer();
+
+        input.init();
+        input.disable();
+
+        // start screen
+
+        getElement('play').addEventListener(clickEvent, function() {
+            gameScreen();
+        });
+
+        getElement('store').addEventListener(clickEvent, function() {
+            scoreScreen();
+        });
+
+        // store screen
+
+        getElements('#store-screen button.back').forEach(function(el) {
+            el.addEventListener(clickEvent, mainScreen);
+        });
+
+        store.populate();
+
+        // in-game
+
+        getElement('play-again').addEventListener(clickEvent, restart);
+        getElement('back-title').addEventListener(clickEvent, function() {
+            if(!paused) {
+                togglePause();
+            }
+
+            mainScreen();
+        });
+        getElement('pause').addEventListener(clickEvent, togglePause);
+        getElement('continue').addEventListener(clickEvent, togglePause);
+        getElement('restart').addEventListener(clickEvent, restart);
+
+        document.addEventListener('keyup', function(e) {
+            if(String.fromCharCode(e.keyCode) == 'P') {
+                togglePause();
+            }
+        });
+
+        // must use the click event for fullscreen access (just a
+        // bug for now)
+        getElement('fullscreen').addEventListener('click', fullscreen);
     }
 
     var lastTime;
