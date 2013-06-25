@@ -52,11 +52,12 @@ app.post('/sign-jwt', function(req, res) {
             id: name,
             name: name,
             description: item.description,
+            icons: { '64': settings.url + '/img/items/blaster-ship.png' },
             pricePoint: 1,
             productData: token,
             postbackURL: settings.url + '/mozpay/postback',
-            chargebackURL: settings.url + '/mozpay/chargeback',
-            simulate: { 'result': 'postback' }
+            chargebackURL: settings.url + '/mozpay/chargeback'
+            //simulate: { 'result': 'postback' }
         });
 
         // Keep track of which JWT objects we are waiting on
