@@ -1,7 +1,10 @@
 {
-  "name": "webfighter",
-  "dependencies": {
-    "mozpay": "0.0.3",
-    "express": "~3.3.1"
-  }
+    "name": "webfighter",
+    "scripts": {
+        "start": "node main"
+    },
+    "dependencies": {
+        "mozpay": "0.0.3",
+        "express": "~3.3.1"
+    }
 }
