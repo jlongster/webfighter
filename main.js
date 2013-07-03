@@ -4,6 +4,8 @@ var pay = require('mozpay');
 var store = require('./store');
 var settings = require('./settings');
 
+settings.port = process.env.VCAP_APP_PORT || settings.port;
+
 // This uses the mozpay node module to set up the server-side payment
 // handling for us: https://github.com/mozilla/mozpay-js
 //
@@ -105,4 +107,6 @@ pay.on('chargeback', function(data) {
 });
 
 pay.routes(app);
+
+console.log('starting on port ' + settings.port);
 app.listen(settings.port);
