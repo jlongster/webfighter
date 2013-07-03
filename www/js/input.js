@@ -57,20 +57,10 @@ define(function(require) {
 
     function disable() {
         disabled = true;
-        var dpad = document.querySelector('.dpad');
-
-        dpad.removeEventListener('touchstart', dpadStart, true);
-        dpad.removeEventListener('touchmove', dpadMove, true);
-        dpad.removeEventListener('touchend', dpadEnd, true);
     }
 
     function enable() {
         disabled = false;
-        var dpad = document.querySelector('.dpad');
-
-        dpad.addEventListener('touchstart', dpadStart, true);
-        dpad.addEventListener('touchmove', dpadMove, true);
-        dpad.addEventListener('touchend', dpadEnd, true);
     }
 
     var startPos;
@@ -139,19 +129,25 @@ define(function(require) {
         function fireStart(e) {
             e.preventDefault();
             pressedKeys['SPACE'] = true;
-            fire.style.backgroundColor = '#ccf';
+            //fire.style.backgroundColor = '#ccf';
         }
 
         function fireCancel(e) {
             e.preventDefault();
             pressedKeys['SPACE'] = false;
-            fire.style.backgroundColor = '#fcc';
+            //fire.style.backgroundColor = '#fcc';
         }
 
         fire.addEventListener('touchstart', fireStart, false);
         fire.addEventListener('touchend', fireCancel, false);
         fire.addEventListener('touchleave', fireCancel, false);
         fire.addEventListener('touchcancel', fireCancel, false);
+
+        // Initialize the dpad control
+        var dpad = document.querySelector('.dpad');
+        dpad.addEventListener('touchstart', dpadStart, true);
+        dpad.addEventListener('touchmove', dpadMove, true);
+        dpad.addEventListener('touchend', dpadEnd, true);
     }
 
     return {
