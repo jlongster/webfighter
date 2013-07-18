@@ -16,57 +16,55 @@
          through the marketpace (see app.js) -->
     <!-- <button id="install-btn">Install</button>     -->
 
-    <!-- <div id="size-wrapper"> -->
-      <canvas id="canvas"></canvas>
+    <canvas id="canvas"></canvas>
 
-      <div id="start-screen">
-        <div class="title">
-          <img src="img/logo-ship.png" />
-          <h1>Webfighter</h1>
-        </div>
-
-        <div class="buttons">
-          <button id="play">Play</button>
-          <button id="store">Store</button>
-        </div>
+    <div id="start-screen">
+      <div class="title">
+        <h1>Webfighter</h1>
+        <img src="img/logo-ship.png" />
       </div>
 
-      <div id="store-screen">        
-        <button class="back top">&larr;</button>
-
-        <h1>Ships</h1>
-        <div class="items ships"></div>
-
-        <h1>Weapons</h1>
-        <div class="items weapons"></div>
-
-        <button class="back">Back to Title</button>
+      <div class="buttons">
+        <button id="play">Play</button>
+        <button id="store">Store</button>
       </div>
+    </div>
 
-      <div id="game-over-overlay">
-      </div>
+    <div id="store-screen">        
+      <button class="back top">&larr;</button>
 
-      <div id="game-over">
-        <h1 class="message"></h1>
-        <button id="play-again">Play Again</button>
-        <button id="back-title">Back to Title</button>
-      </div>
+      <h1>Ships</h1>
+      <div class="items ships"></div>
 
-      <div id="appbar">
-        <img class="button" id="pause" src="img/pause.png" />
-        <img class="button" id="continue" src="img/play.png" />
-        <img class="button" id="restart" src="img/restart.png" />
-        <img class="button" id="fullscreen" src="img/fullscreen.png" />
-        <div class="score">Score: <span></span></div>
-        <div class="life">Life: <span></span></div>
-      </div>
+      <h1>Weapons</h1>
+      <div class="items weapons"></div>
 
-      <div id="controls">
-        <div class="input dpad"></div>
-        <div class="input fire"></div>
-        <div class="debug"></div>
-      </div>
-    <!-- </div> -->
+      <button class="back">Back to Title</button>
+    </div>
+
+    <div id="game-over-overlay">
+    </div>
+
+    <div id="game-over">
+      <h1 class="message"></h1>
+      <button id="play-again">Play Again</button>
+      <button id="back-title">Back to Title</button>
+    </div>
+
+    <div id="appbar">
+      <img class="button" id="pause" src="img/pause.png" />
+      <img class="button" id="continue" src="img/play.png" />
+      <img class="button" id="restart" src="img/restart.png" />
+      <img class="button" id="fullscreen" src="img/fullscreen.png" />
+      <div class="score">Score: <span></span></div>
+      <div class="life">Life: <span></span></div>
+    </div>
+
+    <div id="controls">
+      <div class="input dpad"></div>
+      <div class="input fire"></div>
+      <div class="debug"></div>
+    </div>
 
     <!-- Using require.js, a module system for javascript, include the
          js files. This loads "main.js", which in turn can load other

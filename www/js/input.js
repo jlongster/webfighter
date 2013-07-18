@@ -20,8 +20,6 @@ define(function(require) {
         'FIRE': false
     };
 
-    window.addEventListener('touchmove', preventDefault, true);
-
     document.addEventListener('keydown', function(e) {
         setKey(e, true);
     });
