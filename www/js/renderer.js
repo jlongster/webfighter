@@ -21,14 +21,16 @@ define(function(require) {
             this.canvas = canvas;
             this.sizeWrapper = sizeWrapper;
             this.resizeFuncs = [];
-            this.optimizeSize(canvas, sizeWrapper);
 
-            var _this = this;
-            window.onresize = function() {
-                _this.optimizeSize(canvas, sizeWrapper);
-            };
+            // ignore this for now, it's too hard
+            // this.optimizeSize(canvas, sizeWrapper);
 
-            window.onresize();
+            // var _this = this;
+            // window.onresize = function() {
+            //     _this.optimizeSize(canvas, sizeWrapper);
+            // };
+
+            //window.onresize();
         },
 
         optimizeSize: function(canvas, wrapper) {
@@ -71,7 +73,11 @@ define(function(require) {
 
         reset: function() {
             this.resizeFuncs = [];
-            this.optimizeSize(this.canvas, this.sizeWrapper);
+            // this.optimizeSize(this.canvas, this.sizeWrapper);
+
+            var barHeight = document.getElementById('appbar').clientHeight;
+            this.width = canvas.width = window.innerWidth;
+            this.height = canvas.height = window.innerHeight - barHeight;
         },
 
         onResize: function(func) {

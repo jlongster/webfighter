@@ -158,6 +158,7 @@ define(function(require) {
     }
 
     function init() {
+        console.log(screen.mozLockOrientation('landscape-primary'));
         renderer = new Renderer();
 
         input.init();
