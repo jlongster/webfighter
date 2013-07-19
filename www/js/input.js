@@ -67,7 +67,7 @@ define(function(require) {
         var touch = e.changedTouches[0];
         startPos = [touch.clientX, touch.clientY];
 
-        dpad.style.backgroundColor = '#ccf';
+        // dpad.style.backgroundColor = '#ccf';
     }
 
     function dpadMove(e) {
@@ -117,7 +117,7 @@ define(function(require) {
         pressedKeys['RIGHT'] = false;
         pressedKeys['DOWN'] = false;
 
-        dpad.style.backgroundColor = '#fcc';
+        // dpad.style.backgroundColor = '#fcc';
     }
 
     function init() {

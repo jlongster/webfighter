@@ -158,7 +158,20 @@ define(function(require) {
     }
 
     function init() {
-        console.log(screen.mozLockOrientation('landscape-primary'));
+        screen.mozLockOrientation('landscape-primary');
+
+        // document.addEventListener('visibilitychange', function() {
+        //     if(document.visibilityState == 'visible') {
+        //         screen.mozLockOrientation('landscape-primary');
+        //     }
+        // });
+
+        document.addEventListener('mozfullscreenchange', function() {
+            if(document.mozFullScreenEnabled) {
+                screen.mozLockOrientation('landscape-primary');
+            }
+        });
+
         renderer = new Renderer();
 
         input.init();
