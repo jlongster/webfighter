@@ -54,11 +54,11 @@ app.post('/sign-jwt', function(req, res) {
             id: name,
             name: name,
             description: item.description,
-            icons: { '64': settings.url + '/img/items/blaster-ship.png' },
+            icons: { '64': settings.url + item.icon },
             pricePoint: 1,
             productData: token,
-            postbackURL: settings.url + '/mozpay/postback',
-            chargebackURL: settings.url + '/mozpay/chargeback'
+            postbackURL: settings.url + 'mozpay/postback',
+            chargebackURL: settings.url + 'mozpay/chargeback'
             //simulate: { 'result': 'postback' }
         });
 

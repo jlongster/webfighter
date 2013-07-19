@@ -14,12 +14,12 @@ module.exports = {
         'Blaster': {
             'icon': 'img/items/blaster-ship.png',
             'description': 'A ship with powerful armour. Has a life of 4.',
-            'price': '2'
+            'price': '30'
         },
         'Duel Fighter': {
             'icon': 'img/items/duel-ship.png',
             'description': 'Equipped with duel-blasting cannons, take on even more enemies at once.',
-            'price': '2'
+            'price': '30'
         }
     },
 

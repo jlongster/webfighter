@@ -158,19 +158,21 @@ define(function(require) {
     }
 
     function init() {
-        screen.mozLockOrientation('landscape-primary');
+        if(screen.mozLockOrientation) {
+            screen.mozLockOrientation('landscape-primary');
 
-        // document.addEventListener('visibilitychange', function() {
-        //     if(document.visibilityState == 'visible') {
-        //         screen.mozLockOrientation('landscape-primary');
-        //     }
-        // });
+            // document.addEventListener('visibilitychange', function() {
+            //     if(document.visibilityState == 'visible') {
+            //         screen.mozLockOrientation('landscape-primary');
+            //     }
+            // });
 
-        document.addEventListener('mozfullscreenchange', function() {
-            if(document.mozFullScreenEnabled) {
-                screen.mozLockOrientation('landscape-primary');
-            }
-        });
+            document.addEventListener('mozfullscreenchange', function() {
+                if(document.mozFullScreenEnabled) {
+                    screen.mozLockOrientation('landscape-primary');
+                }
+            });
+        }
 
         renderer = new Renderer();
 

@@ -10,6 +10,11 @@ define(function(require) {
         additions: []
     };
 
+    var priceTiers = {
+        1: '$0.10',
+        30: '$2.99'
+    };
+
     // store
 
     var pollTimer = null;
@@ -95,7 +100,7 @@ define(function(require) {
     // The rest of this code implements the UI of the store
 
     function formatPrice(point) {
-        return '$' + (point - .01).toFixed(2);
+        return priceTiers[point];
     }
 
     function itemClass(name) {
