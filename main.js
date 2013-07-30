@@ -55,7 +55,7 @@ app.post('/sign-jwt', function(req, res) {
             name: name,
             description: item.description,
             icons: { '64': settings.url + item.icon },
-            pricePoint: 1,
+            pricePoint: item.price,
             productData: token,
             postbackURL: settings.url + 'mozpay/postback',
             chargebackURL: settings.url + 'mozpay/chargeback'

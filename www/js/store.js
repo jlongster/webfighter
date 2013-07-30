@@ -12,6 +12,7 @@ define(function(require) {
 
     var priceTiers = {
         1: '$0.10',
+        10: '$0.99',
         30: '$2.99'
     };
 
