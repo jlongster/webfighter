@@ -45,3 +45,4 @@ www-built
 www-ghdeploy
 .#*
 settings.js
+www/js/lib/bower_components/

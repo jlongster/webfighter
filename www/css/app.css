@@ -1,4 +1,4 @@
-
+mage
 /* @import "install-button.css"; */
 
 @font-face {
@@ -179,7 +179,7 @@ canvas {
 }
 
 #store-screen button.back.top {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     border: 0;
