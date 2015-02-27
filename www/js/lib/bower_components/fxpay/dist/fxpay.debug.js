@@ -95,7 +95,7 @@
     };
     options = exports.defaults(options, defaults);
     var xy = exports.getCenteredCoordinates(options.w, options.h);
-    var winOptString = "toolbar=no,location=no,directories=no," + "menubar=no,scrollbars=yes,resizable=no,copyhistory=no," + "width=" + options.w + ",height=" + options.h + ",top=" + xy[1] + ",left=" + xy[0];
+    var winOptString = "toolbar=no,location=yes,directories=no," + "menubar=no,scrollbars=yes,resizable=no,copyhistory=no," + "width=" + options.w + ",height=" + options.h + ",top=" + xy[1] + ",left=" + xy[0];
     var windowRef = settings.window.open(options.url, options.title, winOptString);
     if (!windowRef) {
       settings.log.error("window.open() failed. URL:", options.url);
@@ -219,23 +219,27 @@
     // Configure new settings values.
     //
     opt = opt || {};
+    // On first run, we always need to reset.
+    if (!exports.alreadyConfigured) {
+      opt.reset = true;
+    }
     // Reset existing configuration.
-    // if (opt.reset) {
+    if (opt.reset) {
       for (var def in defaultSettings) {
         exports[def] = defaultSettings[def];
       }
-    // }
+    }
     // Merge new values into existing configuration.
     for (var param in newSettings) {
       if (typeof exports[param] === "undefined") {
-        //exports.log.error("configure() received an unknown setting:", param);
+        exports.log.error("configure() received an unknown setting:", param);
         return exports.onerror("INCORRECT_USAGE");
       }
       exports[param] = newSettings[param];
     }
     // Set some implied values from other parameters.
     if (exports.extraProviderUrls) {
-      // exports.log.info("adding extra pay provider URLs", exports.extraProviderUrls);
+      exports.log.info("adding extra pay provider URLs", exports.extraProviderUrls);
       for (var paySpec in exports.extraProviderUrls) {
         exports.payProviderUrls[paySpec] = exports.extraProviderUrls[paySpec];
       }
@@ -635,6 +639,7 @@
   //
   function expandInfo(ob) {
     return {
+      pricePointId: ob.price_id,
       productId: ob.guid,
       name: ob.name,
       smallImageUrl: ob.logo_url
