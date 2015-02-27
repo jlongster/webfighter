@@ -18,6 +18,6 @@
     "tests"
   ],
   "dependencies": {
-    "fxpay": "0.0.13"
+    "fxpay": "0.0.14"
   }
 }
