@@ -17,11 +17,27 @@ define(function(require) {
         2: 'weapons',
     };
 
-    // Mapping of price point id (tier id) to price in $USD
+    // PriceMapping for host: marketplace.allizom.org
     var pricePoints = {
-        36: '$0.50',
-        1: '$0.99',
-        3: '$2.99',
+      "32": "$0.10",
+      "1": "$0.99",
+      "34": "$0.25",
+      "3": "$2.99",
+      "36": "$0.50",
+      "5": "$4.99",
+      "38": "$12.49",
+      "39": "$0.15",
+      "41": "$0.40",
+      "10": "$9.99",
+      "43": "$0.70",
+      "2": "$1.99",
+      "15": "$14.99",
+      "20": "$19.99",
+      "25": "$24.99",
+      "7": "$6.99",
+      "4": "$3.99",
+      "26": "$29.99",
+      "31": "$0.00"
     };
 
     // Mapping of in-app item guids to names, categories and descriptions.
