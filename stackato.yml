@@ -1,5 +1,0 @@
-name: webfighter
-instances: 1
-framework:
-  type: node
-mem: 128
