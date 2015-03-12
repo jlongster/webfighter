@@ -46,3 +46,5 @@ www-ghdeploy
 .#*
 settings.js
 www/js/lib/bower_components/
+.grunt/*
+node_modules
