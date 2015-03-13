@@ -1,0 +1,23 @@
+{
+  "name": "webfighter",
+  "version": "0.0.1",
+  "homepage": "https://github.com/jlongster/webfighter/",
+  "authors": [
+    "James Long"
+  ],
+  "main": "main.js",
+  "moduleType": [
+    "node"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "fxpay": "0.0.14"
+  }
+}

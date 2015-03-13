@@ -1,11 +1,9 @@
 {
     "name": "webfighter",
     "version": "0.0.1",
-    "scripts": {
-        "start": "node main"
-    },
-    "dependencies": {
-        "mozpay": "0.0.3",
-        "express": "~3.3.1"
+    "devDependencies": {
+        "grunt": "^0.4.5",
+        "grunt-devserver": "^0.6.0",
+        "grunt-gh-pages": "^0.10.0"
     }
 }

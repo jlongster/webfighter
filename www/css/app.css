@@ -1,4 +1,4 @@
-
+mage
 /* @import "install-button.css"; */
 
 @font-face {
@@ -62,10 +62,12 @@ canvas {
 #game-over-overlay, #game-over, #start-screen, #store-screen {
     position: absolute;
     top: 0;
+    right: 0;
+    bottom: 0;
     left: 0;
     width: 100%;
-    min-height: 100%;
     display: none;
+    overflow: scroll;
 }
 
 #start-screen, #store-screen {
@@ -177,11 +179,12 @@ canvas {
 }
 
 #store-screen button.back.top {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     border: 0;
     margin-top: 0;
+    z-index: 10;
 }
 
 #store-screen button.back.top:active {

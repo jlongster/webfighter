@@ -195,7 +195,7 @@ define(function(require) {
             el.addEventListener(clickEvent, mainScreen);
         });
 
-        store.populate();
+        store.init();
 
         // in-game
 
