@@ -1,0 +1,7 @@
+name: webfighter-inapp
+instances: 1
+framework:
+    type: php
+    document-root: www
+mem: 128
+disk: 512
